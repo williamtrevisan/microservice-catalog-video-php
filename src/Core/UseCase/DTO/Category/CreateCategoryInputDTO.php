@@ -2,7 +2,7 @@
 
 namespace Core\UseCase\DTO\Category;
 
-class CreateCategoryDTO
+class CreateCategoryInputDTO
 {
     public function __construct(
         public string $name,
