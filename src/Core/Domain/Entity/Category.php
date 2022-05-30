@@ -14,4 +14,9 @@ class Category
         protected string $description = '',
         protected bool $isActive = true
     ) {}
+
+    public function activate()
+    {
+        $this->isActive = true;
+    }
 }
