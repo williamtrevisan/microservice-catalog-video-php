@@ -80,7 +80,7 @@ class CategoryUnitTest extends TestCase
                 description: 'Category description'
             );
 
-            $this->assertTrue(true);
+            $this->assertTrue(false);
         } catch (Throwable $throwable) {
             $this->assertInstanceOf(EntityValidationException::class, $throwable);
         }
