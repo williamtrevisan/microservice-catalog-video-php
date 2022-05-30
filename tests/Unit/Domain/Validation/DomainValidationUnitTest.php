@@ -3,6 +3,7 @@
 namespace Tests\Unit\Domain\Validation;
 
 use Core\Domain\Exception\EntityValidationException;
+use Core\Domain\Validation\DomainValidation;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -13,7 +14,7 @@ class DomainValidationUnitTest extends TestCase
         try {
             $value = '';
 
-            DomainValidationUnitTest::notNull($value);
+            DomainValidation::notNull($value);
 
             $this->assertTrue(false);
         } catch (Throwable $throwable) {
