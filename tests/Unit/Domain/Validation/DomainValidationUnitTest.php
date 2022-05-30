@@ -38,4 +38,34 @@ class DomainValidationUnitTest extends TestCase
             );
         }
     }
+
+    public function testStrMaxLength()
+    {
+        try {
+            $value = 'Test';
+
+            DomainValidation::strMaxLength($value, 4);
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertInstanceOf(EntityValidationException::class, $throwable);
+        }
+    }
+
+    public function testStrMaxLengthCustomExceptionMessage()
+    {
+        try {
+            $value = 'Test';
+
+            DomainValidation::strMaxLength($value, 4, 'Custom error message');
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertInstanceOf(
+                EntityValidationException::class,
+                $throwable,
+                'Custom error message'
+            );
+        }
+    }
 }
