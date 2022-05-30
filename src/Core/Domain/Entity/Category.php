@@ -45,7 +45,7 @@ class Category
         $this->validate();
     }
 
-    public function validate()
+    private function validate()
     {
         DomainValidation::strMinLength($this->name);
         DomainValidation::strMaxLength($this->name);
