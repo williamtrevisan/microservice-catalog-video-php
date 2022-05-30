@@ -19,6 +19,7 @@ class CategoryUnitTest extends TestCase
         );
 
         $this->assertNotEmpty($category->id());
+        $this->assertNotEmpty($category->createdAt());
         $this->assertEquals('Category name', $category->name);
         $this->assertEquals('Category description', $category->description);
         $this->assertTrue($category->isActive);
