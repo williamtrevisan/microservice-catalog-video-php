@@ -38,4 +38,19 @@ class DomainValidation
             );
         }
     }
+
+    public static function strCanNullAndMaxLength(
+        string $value,
+        int $length = 255,
+        string $exceptionMessage = null
+    ) {
+        if (
+            $value &&
+            strlen($value) > $length
+        ) {
+            throw new EntityValidationException(
+                $exceptionMessage ?? "The value must not be greater than $length characters"
+            );
+        }
+    }
 }
