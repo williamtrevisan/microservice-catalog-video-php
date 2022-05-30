@@ -4,6 +4,7 @@ namespace Core\Domain\Entity;
 
 use Core\Domain\Entity\Traits\MagicMethodsTrait;
 use Core\Domain\Exception\EntityValidationException;
+use Core\Domain\Validation\DomainValidation;
 
 class Category
 {
@@ -38,25 +39,8 @@ class Category
 
     public function validate()
     {
-        if (empty($this->name)) {
-            throw new EntityValidationException("Invalid name");
-        }
-
-        if (
-            strlen($this->name) > 255 ||
-            strlen($this->name) < 3
-        ) {
-            throw new EntityValidationException("Invalid name");
-        }
-
-        if (
-            $this->description !== '' &&
-            (
-                strlen($this->description) > 255 ||
-                strlen($this->description) < 3
-            )
-        ) {
-            throw new EntityValidationException("Invalid description");
-        }
+        DomainValidation::strMinLength($this->name);
+        DomainValidation::strMaxLength($this->name);
+        DomainValidation::strCanNullAndMaxLength($this->description);
     }
 }
