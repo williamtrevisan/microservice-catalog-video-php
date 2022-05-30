@@ -71,10 +71,10 @@ class CategoryUnitTest extends TestCase
         $this->assertEquals('Category new description', $category->description);
     }
 
-    public function testExceptionName()
+    public function testExceptionIncorretMinLengthName()
     {
         try {
-            $category = new Category(
+            new Category(
                 id: 'CategoryId',
                 name: 'Ca',
                 description: 'Category description'
@@ -83,6 +83,80 @@ class CategoryUnitTest extends TestCase
             $this->assertTrue(false);
         } catch (Throwable $throwable) {
             $this->assertInstanceOf(EntityValidationException::class, $throwable);
+        }
+    }
+
+    public function testExceptionIncorretMaxLengthName()
+    {
+        try {
+            new Category(
+                id: 'CategoryId',
+                name: random_bytes(256),
+                description: 'Category description'
+            );
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertInstanceOf(EntityValidationException::class, $throwable);
+        }
+    }
+
+    public function testExceptionCorrectName()
+    {
+        try {
+            new Category(
+                id: 'CategoryId',
+                name: 'Category name',
+                description: 'Category description'
+            );
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertNotInstanceOf(EntityValidationException::class, $throwable);
+        }
+    }
+
+    public function testExceptionIncorrectDescription()
+    {
+        try {
+            new Category(
+                id: 'CategoryId',
+                name: 'Category name',
+                description: random_bytes(256)
+            );
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertInstanceOf(EntityValidationException::class, $throwable);
+        }
+    }
+
+    public function testExceptionCorrectDescription()
+    {
+        try {
+            new Category(
+                id: 'CategoryId',
+                name: 'Category name',
+                description: 'Category description'
+            );
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertNotInstanceOf(EntityValidationException::class, $throwable);
+        }
+    }
+
+    public function testExceptionNullDescription()
+    {
+        try {
+            new Category(
+                id: 'CategoryId',
+                name: 'Category name',
+            );
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertNotInstanceOf(EntityValidationException::class, $throwable);
         }
     }
 }
