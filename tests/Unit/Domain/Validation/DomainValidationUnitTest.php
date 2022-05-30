@@ -44,7 +44,7 @@ class DomainValidationUnitTest extends TestCase
         try {
             $value = 'Test';
 
-            DomainValidation::strMaxLength($value, 4);
+            DomainValidation::strMaxLength($value, 3);
 
             $this->assertTrue(false);
         } catch (Throwable $throwable) {
@@ -57,7 +57,7 @@ class DomainValidationUnitTest extends TestCase
         try {
             $value = 'Test';
 
-            DomainValidation::strMaxLength($value, 4, 'Custom error message');
+            DomainValidation::strMaxLength($value, 3, 'Custom error message');
 
             $this->assertTrue(false);
         } catch (Throwable $throwable) {
@@ -74,7 +74,7 @@ class DomainValidationUnitTest extends TestCase
         try {
             $value = 'Test';
 
-            DomainValidation::strMinLength($value, 8);
+            DomainValidation::strMinLength($value, 6);
 
             $this->assertTrue(false);
         } catch (Throwable $throwable) {
@@ -87,7 +87,7 @@ class DomainValidationUnitTest extends TestCase
         try {
             $value = 'Test';
 
-            DomainValidation::strMinLength($value, 8, 'Custom error message');
+            DomainValidation::strMinLength($value, 6, 'Custom error message');
 
             $this->assertTrue(false);
         } catch (Throwable $throwable) {
