@@ -68,4 +68,34 @@ class DomainValidationUnitTest extends TestCase
             );
         }
     }
+
+    public function testStrMinLength()
+    {
+        try {
+            $value = 'Test';
+
+            DomainValidation::strMinLength($value, 8);
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertInstanceOf(EntityValidationException::class, $throwable);
+        }
+    }
+
+    public function testStrMinLengthCustomExceptionMessage()
+    {
+        try {
+            $value = 'Test';
+
+            DomainValidation::strMinLength($value, 8, 'Custom error message');
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertInstanceOf(
+                EntityValidationException::class,
+                $throwable,
+                'Custom error message'
+            );
+        }
+    }
 }
