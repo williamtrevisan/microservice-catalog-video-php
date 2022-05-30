@@ -5,6 +5,7 @@ namespace Tests\Unit\Domain\Entity;
 use Core\Domain\Entity\Category;
 use Core\Domain\Exception\EntityValidationException;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
 use Throwable;
 
 class CategoryUnitTest extends TestCase
@@ -12,12 +13,12 @@ class CategoryUnitTest extends TestCase
     public function testAttributes()
     {
         $category = new Category(
-            id: 'CategoryId',
             name: 'Category name',
             description: 'Category description',
             isActive: true
         );
 
+        $this->assertNotEmpty($category->id);
         $this->assertEquals('Category name', $category->name);
         $this->assertEquals('Category description', $category->description);
         $this->assertTrue($category->isActive);
@@ -26,7 +27,6 @@ class CategoryUnitTest extends TestCase
     public function testActivated()
     {
         $category = new Category(
-            id: 'CategoryId',
             name: 'Category name',
             isActive: false,
         );
@@ -41,7 +41,6 @@ class CategoryUnitTest extends TestCase
     public function testDisabled()
     {
         $category = new Category(
-            id: 'CategoryId',
             name: 'Category name',
         );
 
@@ -54,7 +53,7 @@ class CategoryUnitTest extends TestCase
 
     public function testUpdate()
     {
-        $uuid = 'CategoryId';
+        $uuid = Uuid::uuid4()->toString();
         $category = new Category(
             id: $uuid,
             name: 'Category name',
@@ -75,7 +74,6 @@ class CategoryUnitTest extends TestCase
     {
         try {
             new Category(
-                id: 'CategoryId',
                 name: 'Ca',
                 description: 'Category description'
             );
@@ -90,7 +88,6 @@ class CategoryUnitTest extends TestCase
     {
         try {
             new Category(
-                id: 'CategoryId',
                 name: random_bytes(256),
                 description: 'Category description'
             );
@@ -105,7 +102,6 @@ class CategoryUnitTest extends TestCase
     {
         try {
             new Category(
-                id: 'CategoryId',
                 name: 'Category name',
                 description: 'Category description'
             );
@@ -120,7 +116,6 @@ class CategoryUnitTest extends TestCase
     {
         try {
             new Category(
-                id: 'CategoryId',
                 name: 'Category name',
                 description: random_bytes(256)
             );
@@ -135,7 +130,6 @@ class CategoryUnitTest extends TestCase
     {
         try {
             new Category(
-                id: 'CategoryId',
                 name: 'Category name',
                 description: 'Category description'
             );
@@ -150,7 +144,6 @@ class CategoryUnitTest extends TestCase
     {
         try {
             new Category(
-                id: 'CategoryId',
                 name: 'Category name',
             );
 
