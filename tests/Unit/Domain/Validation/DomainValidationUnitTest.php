@@ -98,4 +98,47 @@ class DomainValidationUnitTest extends TestCase
             );
         }
     }
+
+    public function testStrCanNullAndMaxLength()
+    {
+        try {
+            $value = 'Test';
+
+            DomainValidation::strCanNullAndMaxLength($value, 3);
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertInstanceOf(EntityValidationException::class, $throwable);
+        }
+    }
+
+    public function testStrCanNullAndMaxLengthSendingNull()
+    {
+        try {
+            $value = '';
+
+            DomainValidation::strCanNullAndMaxLength($value, 3);
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertNotInstanceOf(EntityValidationException::class, $throwable);
+        }
+    }
+
+    public function testStrCanNullAndMaxLengthCustomExceptionMessage()
+    {
+        try {
+            $value = 'Test';
+
+            DomainValidation::strCanNullAndMaxLength($value, 3, 'Custom error message');
+
+            $this->assertTrue(false);
+        } catch (Throwable $throwable) {
+            $this->assertInstanceOf(
+                EntityValidationException::class,
+                $throwable,
+                'Custom error message'
+            );
+        }
+    }
 }
