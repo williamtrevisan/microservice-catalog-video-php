@@ -58,7 +58,8 @@ class CategoryUnitTest extends TestCase
         $category = new Category(
             id: $uuid,
             name: 'Category name',
-            description: 'Category description'
+            description: 'Category description',
+            createdAt: '2023-01-01 12:12:12'
         );
 
         $category->update(
@@ -69,6 +70,7 @@ class CategoryUnitTest extends TestCase
         $this->assertEquals($uuid, $category->id);
         $this->assertEquals('Category new name', $category->name);
         $this->assertEquals('Category new description', $category->description);
+        $this->assertEquals('2023-01-01 12:12:12', $category->createdAt());
     }
 
     public function testExceptionIncorretMinLengthName()
