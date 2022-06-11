@@ -21,6 +21,7 @@ class FindCategoryUseCase
             name: $category->name,
             description: $category->description,
             is_active: $category->isActive,
+            created_at: $category->createdAt(),
         );
     }
 }

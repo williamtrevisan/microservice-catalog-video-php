@@ -22,6 +22,7 @@ class FindCategoryUseCaseUnitTest extends TestCase
             'Category name',
         ]);
         $categoryEntity->shouldReceive('id')->andReturn($categoryId);
+        $categoryEntity->shouldReceive('createdAt')->andReturn(date('Y-m-d H:i:s'));
         $categoryRepository =
             Mockery::mock(stdClass::class, CategoryRepositoryInterface::class);
         $categoryRepository
