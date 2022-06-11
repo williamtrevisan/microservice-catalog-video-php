@@ -37,7 +37,7 @@ class Category
         $this->isActive = false;
     }
 
-    public function update(string $name, string $description = '')
+    public function update(string $name, ?string $description = null)
     {
         $this->name = $name;
         $this->description = $description ?? $this->description;
