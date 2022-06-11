@@ -4,7 +4,7 @@ namespace Core\UseCase\Category;
 
 use Core\Domain\Repository\CategoryRepositoryInterface;
 use Core\UseCase\DTO\Category\CategoryInputDTO;
-use Core\UseCase\DTO\Category\CategoryOutputDTO;
+use Core\UseCase\DTO\Category\find\FindCategoryOutputDTO;
 
 class FindCategoryUseCase
 {
@@ -12,11 +12,11 @@ class FindCategoryUseCase
         protected readonly CategoryRepositoryInterface $categoryRepository
     ) {}
 
-    public function execute(CategoryInputDTO $input): CategoryOutputDTO
+    public function execute(CategoryInputDTO $input): FindCategoryOutputDTO
     {
         $category = $this->categoryRepository->findById($input->id);
 
-        return new CategoryOutputDTO(
+        return new FindCategoryOutputDTO(
             id: $category->id(),
             name: $category->name,
             description: $category->description,

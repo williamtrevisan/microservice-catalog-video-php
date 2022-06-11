@@ -6,7 +6,7 @@ use Core\Domain\Entity\Category;
 use Core\Domain\Repository\CategoryRepositoryInterface;
 use Core\UseCase\Category\FindCategoryUseCase;
 use Core\UseCase\DTO\Category\CategoryInputDTO;
-use Core\UseCase\DTO\Category\CategoryOutputDTO;
+use Core\UseCase\DTO\Category\find\FindCategoryOutputDTO;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -36,7 +36,7 @@ class FindCategoryUseCaseUnitTest extends TestCase
         $response = $findCategoryUseCase->execute($categoryInputDTO);
 
         $categoryRepository->shouldHaveReceived('findById');
-        $this->assertInstanceOf(CategoryOutputDTO::class, $response);
+        $this->assertInstanceOf(FindCategoryOutputDTO::class, $response);
         $this->assertEquals('Category name', $response->name);
         $this->assertEquals($categoryId, $response->id);
     }
