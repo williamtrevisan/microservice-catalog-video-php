@@ -13,12 +13,6 @@ cd laravel9/
 ```
 
 
-Alterne de branch
-```sh
-git checkout laravel-9-quick-start
-```
-
-
 Remova o versionamento
 ```sh
 rm -rf .git/
