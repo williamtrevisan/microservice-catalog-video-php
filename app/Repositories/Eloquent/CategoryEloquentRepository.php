@@ -35,7 +35,14 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
 
     public function findAll(string $filter = '', string $order = 'DESC'): array
     {
-        // TODO: Implement findAll() method.
+        $categories = $this->categoryModel
+            ->where(function($query) use ($filter) {
+                if ($filter) $query->where('name', 'ILIKE', "%$filter%");
+            })
+            ->orderBy('id', $order)
+            ->get();
+
+        return $categories->toArray();
     }
 
     public function paginate(string $filter = '', string $order = 'DESC', int $page = 1, int $totalPage = 15): PaginationInterface
