@@ -4,7 +4,7 @@ namespace Tests\Unit\UseCase\Category;
 
 use Core\Domain\Entity\Category;
 use Core\Domain\Repository\CategoryRepositoryInterface;
-use Core\UseCase\Category\ListCategoryUseCase;
+use Core\UseCase\Category\FindCategoryUseCase;
 use Core\UseCase\DTO\Category\CategoryInputDTO;
 use Core\UseCase\DTO\Category\CategoryOutputDTO;
 use Mockery;
@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use stdClass;
 
-class ListCategoryUseCaseUnitTest extends TestCase
+class FindCategoryUseCaseUnitTest extends TestCase
 {
     public function testGetById()
     {
@@ -28,12 +28,12 @@ class ListCategoryUseCaseUnitTest extends TestCase
             ->shouldReceive('findById')
             ->with($categoryId)
             ->andReturn($categoryEntity);
-        $listCategoryInputDTO = Mockery::mock(CategoryInputDTO::class, [
+        $categoryInputDTO = Mockery::mock(CategoryInputDTO::class, [
             $categoryId,
         ]);
 
-        $listCategoryUseCase = new ListCategoryUseCase($categoryRepository);
-        $response = $listCategoryUseCase->execute($listCategoryInputDTO);
+        $findCategoryUseCase = new FindCategoryUseCase($categoryRepository);
+        $response = $findCategoryUseCase->execute($categoryInputDTO);
 
         $categoryRepository->shouldHaveReceived('findById');
         $this->assertInstanceOf(CategoryOutputDTO::class, $response);
