@@ -5,6 +5,7 @@ namespace Tests\Feature\App\Repositories;
 use App\Models\Category as CategoryModel;
 use App\Repositories\Eloquent\CategoryEloquentRepository;
 use Core\Domain\Entity\Category as CategoryEntity;
+use Core\Domain\Exception\NotFoundException;
 use Core\Domain\Repository\CategoryRepositoryInterface;
 use Tests\TestCase;
 use Throwable;
