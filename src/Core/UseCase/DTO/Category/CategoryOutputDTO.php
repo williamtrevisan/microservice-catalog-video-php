@@ -2,11 +2,12 @@
 
 namespace Core\UseCase\DTO\Category;
 
-class CreateCategoryInputDTO
+class CategoryOutputDTO
 {
     public function __construct(
+        public string $id,
         public string $name,
         public string $description = '',
-        public bool $isActive = true,
+        public bool $is_active = true
     ) {}
 }

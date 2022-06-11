@@ -5,8 +5,8 @@ namespace Tests\Unit\UseCase\Category;
 use Core\Domain\Entity\Category;
 use Core\Domain\Repository\CategoryRepositoryInterface;
 use Core\UseCase\Category\CreateCategoryUseCase;
-use Core\UseCase\DTO\Category\CreateCategoryInputDTO;
-use Core\UseCase\DTO\Category\CreateCategoryOutputDTO;
+use Core\UseCase\DTO\Category\create\CreateCategoryInputDTO;
+use Core\UseCase\DTO\Category\create\CreateCategoryOutputDTO;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -33,6 +33,7 @@ class CreateCategoryUseCaseUnitTest extends TestCase
         $createCategoryUseCase = new CreateCategoryUseCase($categoryRepository);
         $response = $createCategoryUseCase->execute($createCategoryInputDTO);
 
+        $categoryRepository->shouldHaveReceived('insert');
         $this->assertInstanceOf(CreateCategoryOutputDTO::class, $response);
 
         Mockery::close();
