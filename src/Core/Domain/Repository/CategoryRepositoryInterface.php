@@ -6,7 +6,7 @@ use Core\Domain\Entity\Category;
 
 interface CategoryRepositoryInterface
 {
-    public function insert(Category $category): Category;
+    public function insert(Category $categoryEntity): Category;
     public function findById(string $id): Category;
     public function findAll(string $filter = '', string $order = 'DESC'): array;
     public function paginate(
@@ -15,7 +15,7 @@ interface CategoryRepositoryInterface
         int $page = 1,
         int $totalPage = 15
     ): PaginationInterface;
-    public function update(Category $category): Category;
+    public function update(Category $categoryEntity): Category;
     public function delete(string $id): bool;
     public function toCategory(object $data): Category;
 }
