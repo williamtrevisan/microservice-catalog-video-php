@@ -39,10 +39,10 @@ class CategoryController extends Controller
             ->additional([
                 'meta' => [
                     'total' => $categories->total,
-                    'currentPage' => $categories->currentPage,
-                    'firstPage' => $categories->firstPage,
-                    'lastPage' => $categories->lastPage,
-                    'perPage' => $categories->perPage,
+                    'current_page' => $categories->current_page,
+                    'first_page' => $categories->first_page,
+                    'last_page' => $categories->last_page,
+                    'per_page' => $categories->per_page,
                     'to' => $categories->to,
                     'from' => $categories->from,
                 ]
