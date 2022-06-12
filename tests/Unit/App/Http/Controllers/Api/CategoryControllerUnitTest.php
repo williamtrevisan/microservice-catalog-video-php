@@ -28,5 +28,7 @@ class CategoryControllerUnitTest extends TestCase
         $listCategoriesUseCase->shouldHaveReceived('execute');
         $this->assertIsObject($response->resource);
         $this->assertArrayHasKey('meta', $response->additional);
+
+        Mockery::close();
     }
 }
