@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use Core\UseCase\Category\CreateCategoryUseCase;
+use Core\UseCase\Category\FindCategoryUseCase;
 use Core\UseCase\Category\ListCategoriesUseCase;
+use Core\UseCase\DTO\Category\CategoryInputDTO;
 use Core\UseCase\DTO\Category\create\CreateCategoryInputDTO;
 use Core\UseCase\DTO\Category\list\ListCategoriesInputDTO;
 use Illuminate\Http\JsonResponse;
@@ -27,18 +29,18 @@ class CategoryController extends Controller
             totalPage: (int) $request->get('totalPage', 15)
         );
 
-        $response = $listCategoriesUseCase->execute(input: $listCategoriesInputDTO);
+        $categories = $listCategoriesUseCase->execute(input: $listCategoriesInputDTO);
 
-        return CategoryResource::collection(collect($response->items))
+        return CategoryResource::collection(collect($categories->items))
             ->additional([
                 'meta' => [
-                    'total' => $response->total,
-                    'currentPage' => $response->currentPage,
-                    'firstPage' => $response->firstPage,
-                    'lastPage' => $response->lastPage,
-                    'perPage' => $response->perPage,
-                    'to' => $response->to,
-                    'from' => $response->from,
+                    'total' => $categories->total,
+                    'currentPage' => $categories->currentPage,
+                    'firstPage' => $categories->firstPage,
+                    'lastPage' => $categories->lastPage,
+                    'perPage' => $categories->perPage,
+                    'to' => $categories->to,
+                    'from' => $categories->from,
                 ]
             ]);
     }
@@ -53,10 +55,21 @@ class CategoryController extends Controller
             isActive: (bool) $request->get('is_active', true),
         );
 
-        $response = $createCategoryUseCase->execute(input: $createCategoryInputDTO);
+        $category = $createCategoryUseCase->execute(input: $createCategoryInputDTO);
 
-        return (new CategoryResource(collect($response)))
+        return (new CategoryResource(collect($category)))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
+    }
+
+    public function show(FindCategoryUseCase $findCategoryUseCase, string $id)
+    {
+        $categoryInputDTO = new CategoryInputDTO(id: $id);
+
+        $category = $findCategoryUseCase->execute($categoryInputDTO);
+
+        return (new CategoryResource(collect($category)))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 }
