@@ -7,8 +7,6 @@ use App\Repositories\Eloquent\CategoryEloquentRepository;
 use Core\UseCase\Category\UpdateCategoryUseCase;
 use Core\UseCase\DTO\Category\update\UpdateCategoryInputDTO;
 use Core\UseCase\DTO\Category\update\UpdateCategoryOutputDTO;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class UpdateCategoryUseCaseTest extends TestCase
