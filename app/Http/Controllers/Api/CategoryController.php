@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use Core\UseCase\Category\CreateCategoryUseCase;
+use Core\UseCase\Category\DeleteCategoryUseCase;
 use Core\UseCase\Category\FindCategoryUseCase;
 use Core\UseCase\Category\ListCategoriesUseCase;
 use Core\UseCase\Category\UpdateCategoryUseCase;
@@ -65,8 +66,10 @@ class CategoryController extends Controller
             ->setStatusCode(Response::HTTP_CREATED);
     }
 
-    public function show(FindCategoryUseCase $findCategoryUseCase, string $id)
-    {
+    public function show(
+        FindCategoryUseCase $findCategoryUseCase,
+        string $id
+    ): JsonResponse {
         $categoryInputDTO = new CategoryInputDTO(id: $id);
 
         $category = $findCategoryUseCase->execute($categoryInputDTO);
@@ -80,7 +83,7 @@ class CategoryController extends Controller
         UpdateCategoryRequest $request,
         UpdateCategoryUseCase $updateCategoryUseCase,
         string $id
-    ) {
+    ): JsonResponse {
         $updateCategoryInputDTO = new UpdateCategoryInputDTO(
             id: $id,
             name: $request->name,
@@ -93,5 +96,16 @@ class CategoryController extends Controller
         return (new CategoryResource(collect($category)))
             ->response()
             ->setStatusCode(Response::HTTP_OK);
+    }
+
+    public function destroy(
+        DeleteCategoryUseCase $deleteCategoryUseCase,
+        string $id
+    ): Response {
+        $categoryInputDTO = new CategoryInputDTO(id: $id);
+
+        $deleteCategoryUseCase->execute($categoryInputDTO);
+
+        return response()->noContent();
     }
 }
