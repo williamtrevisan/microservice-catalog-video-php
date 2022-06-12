@@ -49,4 +49,31 @@ class CategoryApiTest extends TestCase
         $this->assertEquals(2, $response['meta']['current_page']);
         $this->assertEquals(30, $response['meta']['total']);
     }
+
+    public function testFindCategoryNotFound()
+    {
+        $response = $this->getJson("$this->endpoint/categoryId");
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testFindCategory()
+    {
+        $category = Category::factory()->create();
+
+        $response = $this->getJson("$this->endpoint/$category->id");
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+                'name',
+                'description',
+                'is_active',
+                'created_at',
+            ],
+        ]);
+        $this->assertEquals($category->id, $response['data']['id']);
+
+    }
 }

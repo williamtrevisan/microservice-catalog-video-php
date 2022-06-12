@@ -74,7 +74,7 @@ class CategoryController extends Controller
 
         $category = $findCategoryUseCase->execute($categoryInputDTO);
 
-        return (new CategoryResource(collect($category)))
+        return (new CategoryResource($category))
             ->response()
             ->setStatusCode(Response::HTTP_OK);
     }
