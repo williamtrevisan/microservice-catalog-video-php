@@ -28,6 +28,6 @@ class UpdateCategoryUseCaseTest extends TestCase
         $this->assertInstanceOf(UpdateCategoryOutputDTO::class, $response);
         $this->assertEquals('Category name updated', $response->name);
         $this->assertEquals($categoryDatabase->description, $response->description);
-        $this->assertSoftDeleted('categories', ['name' => 'Category name updated']);
+        $this->assertDatabaseHas('categories', ['name' => 'Category name updated']);
     }
 }
