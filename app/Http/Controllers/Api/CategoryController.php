@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use Core\UseCase\Category\CreateCategoryUseCase;
 use Core\UseCase\Category\FindCategoryUseCase;
 use Core\UseCase\Category\ListCategoriesUseCase;
+use Core\UseCase\Category\UpdateCategoryUseCase;
 use Core\UseCase\DTO\Category\CategoryInputDTO;
 use Core\UseCase\DTO\Category\create\CreateCategoryInputDTO;
 use Core\UseCase\DTO\Category\list\ListCategoriesInputDTO;
+use Core\UseCase\DTO\Category\update\UpdateCategoryInputDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -67,6 +70,25 @@ class CategoryController extends Controller
         $categoryInputDTO = new CategoryInputDTO(id: $id);
 
         $category = $findCategoryUseCase->execute($categoryInputDTO);
+
+        return (new CategoryResource(collect($category)))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
+    }
+
+    public function update(
+        UpdateCategoryRequest $request,
+        UpdateCategoryUseCase $updateCategoryUseCase,
+        string $id
+    ) {
+        $updateCategoryInputDTO = new UpdateCategoryInputDTO(
+            id: $id,
+            name: $request->name,
+            description: $request->get('description', ''),
+            isActive: (bool) $request->get('is_active', true),
+        );
+
+        $category = $updateCategoryUseCase->execute(input: $updateCategoryInputDTO);
 
         return (new CategoryResource(collect($category)))
             ->response()
