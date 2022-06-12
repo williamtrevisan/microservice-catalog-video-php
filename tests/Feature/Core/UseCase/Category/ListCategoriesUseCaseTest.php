@@ -7,8 +7,6 @@ use App\Repositories\Eloquent\CategoryEloquentRepository;
 use Core\UseCase\Category\ListCategoriesUseCase;
 use Core\UseCase\DTO\Category\list\ListCategoriesInputDTO;
 use Core\UseCase\DTO\Category\list\ListCategoriesOutputDTO;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ListCategoriesUseCaseTest extends TestCase
