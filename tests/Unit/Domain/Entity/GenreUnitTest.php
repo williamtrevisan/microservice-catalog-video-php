@@ -28,6 +28,9 @@ class GenreUnitTest extends TestCase
         $this->assertEquals('Genre name', $genre->name);
         $this->assertTrue($genre->isActive);
         $this->assertEquals($date, $genre->createdAt());
+        $this->assertIsArray($genre->categoriesId);
+        $this->assertCount(0, $genre->categoriesId);
+        $this->assertEquals([], $genre->categoriesId);
     }
 
     public function testAttributesCreate()
@@ -89,5 +92,10 @@ class GenreUnitTest extends TestCase
         $genre = new Genre(name: 'Genre name');
 
         $genre->addCategory(categoryId: $categoryId);
+        $genre->addCategory(categoryId: $categoryId);
+
+        $this->assertIsArray($genre->categoriesId);
+        $this->assertCount(2, $genre->categoriesId);
+        $this->assertEquals([$categoryId, $categoryId], $genre->categoriesId);
     }
 }

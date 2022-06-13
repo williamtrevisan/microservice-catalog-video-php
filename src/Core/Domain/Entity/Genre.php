@@ -11,6 +11,8 @@ class Genre
 {
     use MagicMethodsTrait;
 
+    protected array $categoriesId = [];
+
     public function __construct(
         protected string $name,
         protected ?Uuid $id = null,
@@ -38,6 +40,11 @@ class Genre
         $this->name = $name;
 
         $this->validate();
+    }
+
+    public function addCategory(string $categoryId)
+    {
+        $this->categoriesId[] = $categoryId;
     }
 
     private function validate()
