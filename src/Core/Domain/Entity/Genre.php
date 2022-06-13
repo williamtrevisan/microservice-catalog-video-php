@@ -3,6 +3,7 @@
 namespace Core\Domain\Entity;
 
 use Core\Domain\Entity\Traits\MagicMethodsTrait;
+use Core\Domain\Validation\DomainValidation;
 use Core\Domain\ValueObject\Uuid;
 use DateTime;
 
@@ -18,6 +19,8 @@ class Genre
     ) {
         $this->id = $this->id ?? Uuid::random();
         $this->createdAt = $this->createdAt ?? new DateTime();
+
+        $this->validate();
     }
 
     public function activate()
@@ -33,5 +36,13 @@ class Genre
     public function update(string $name)
     {
         $this->name = $name;
+
+        $this->validate();
+    }
+
+    private function validate()
+    {
+        DomainValidation::strMinLength($this->name);
+        DomainValidation::strMaxLength($this->name);
     }
 }
