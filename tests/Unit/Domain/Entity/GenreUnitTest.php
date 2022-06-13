@@ -112,4 +112,19 @@ class GenreUnitTest extends TestCase
         $this->assertCount(2, $genre->categoriesId);
         $this->assertEquals([$categoryId, $categoryId], $genre->categoriesId);
     }
+
+    public function testRemoveCategoryFromGenre()
+    {
+        $categoryId1 = RamseyUuid::uuid4()->toString();
+        $categoryId2 = RamseyUuid::uuid4()->toString();
+        $genre = new Genre(
+            name: 'Genre name',
+            categoriesId: [$categoryId1, $categoryId2]
+        );
+
+        $genre->removeCategory(categoryId: $categoryId1);
+
+        $this->assertCount(1, $genre->categoriesId);
+        $this->assertEquals([$categoryId2], $genre->categoriesId);
+    }
 }
