@@ -54,6 +54,8 @@ class Handler extends ExceptionHandler
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
+
+        return parent::render($request, $throwable);
     }
 
     private function showError(string $message, int $statusCode)
