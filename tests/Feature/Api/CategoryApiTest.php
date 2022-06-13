@@ -88,4 +88,24 @@ class CategoryApiTest extends TestCase
             'errors' => ['name']
         ]);
     }
+
+    public function testStore()
+    {
+        $payload = ['name' => 'Category name'];
+
+        $response = $this->postJson($this->endpoint, $payload);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+                'name',
+                'description',
+                'is_active',
+                'created_at'
+            ],
+        ]);
+        $this->assertEquals($payload['name'], $response['data']['name']);
+        $this->assertTrue($response['data']['is_active']);
+    }
 }

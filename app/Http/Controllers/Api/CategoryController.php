@@ -61,7 +61,7 @@ class CategoryController extends Controller
 
         $category = $createCategoryUseCase->execute(input: $createCategoryInputDTO);
 
-        return (new CategoryResource(collect($category)))
+        return (new CategoryResource($category))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
     }
