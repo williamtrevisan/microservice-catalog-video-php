@@ -36,7 +36,10 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
 
     public function getIdsByListId(array $categoriesId = []): array
     {
-        return $this->categoryModel->whereIn('id', $categoriesId)->get()->pluck('id');
+        return $this->categoryModel
+            ->whereIn('id', $categoriesId)
+            ->pluck('id')
+            ->toArray();
     }
 
     public function findAll(string $filter = '', string $order = 'DESC'): array
