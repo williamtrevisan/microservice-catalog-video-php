@@ -150,4 +150,21 @@ class CategoryApiTest extends TestCase
         $this->assertTrue($response['data']['is_active']);
         $this->assertDatabaseHas('categories', ['name' => 'Category name updated']);
     }
+
+    public function testDeleteNotFound()
+    {
+        $response = $this->deleteJson("$this->endpoint/categoryId");
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testDelete()
+    {
+        $category = Category::factory()->create();
+
+        $response = $this->deleteJson("$this->endpoint/$category->id");
+
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
+        $this->assertSoftDeleted('categories', ['id' => $category->id]);
+    }
 }
