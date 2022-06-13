@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\UseCase\DTO\Category\create;
+namespace Core\UseCase\DTO\Category\Create;
 
 class CreateCategoryInputDTO
 {

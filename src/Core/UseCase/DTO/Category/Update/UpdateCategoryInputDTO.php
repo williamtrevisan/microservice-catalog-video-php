@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\UseCase\DTO\Category\update;
+namespace Core\UseCase\DTO\Category\Update;
 
 class UpdateCategoryInputDTO
 {

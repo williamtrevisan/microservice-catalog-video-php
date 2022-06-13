@@ -3,8 +3,8 @@
 namespace Core\UseCase\Category;
 
 use Core\Domain\Repository\CategoryRepositoryInterface;
-use Core\UseCase\DTO\Category\update\UpdateCategoryInputDTO;
-use Core\UseCase\DTO\Category\update\UpdateCategoryOutputDTO;
+use Core\UseCase\DTO\Category\Update\UpdateCategoryInputDTO;
+use Core\UseCase\DTO\Category\Update\UpdateCategoryOutputDTO;
 
 class UpdateCategoryUseCase
 {

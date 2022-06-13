@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\UseCase\DTO\Category\list;
+namespace Core\UseCase\DTO\Category\List;
 
 class ListCategoriesInputDTO
 {

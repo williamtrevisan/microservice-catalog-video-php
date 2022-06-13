@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\UseCase\DTO\Category\delete;
+namespace Core\UseCase\DTO\Category\Delete;
 
 class DeleteCategoryOutputDTO
 {

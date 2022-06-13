@@ -3,8 +3,8 @@
 namespace Core\UseCase\Category;
 
 use Core\Domain\Repository\CategoryRepositoryInterface;
-use Core\UseCase\DTO\Category\list\ListCategoriesInputDTO;
-use Core\UseCase\DTO\Category\list\ListCategoriesOutputDTO;
+use Core\UseCase\DTO\Category\List\ListCategoriesInputDTO;
+use Core\UseCase\DTO\Category\List\ListCategoriesOutputDTO;
 
 class ListCategoriesUseCase
 {

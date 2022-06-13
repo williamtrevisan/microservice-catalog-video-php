@@ -1,8 +1,8 @@
 <?php
 
-namespace Core\UseCase\DTO\Category\create;
+namespace Core\UseCase\DTO\Category\Find;
 
-class CreateCategoryOutputDTO
+class FindCategoryOutputDTO
 {
     public function __construct(
         public string $id,

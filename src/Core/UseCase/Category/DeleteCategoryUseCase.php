@@ -4,7 +4,7 @@ namespace Core\UseCase\Category;
 
 use Core\Domain\Repository\CategoryRepositoryInterface;
 use Core\UseCase\DTO\Category\CategoryInputDTO;
-use Core\UseCase\DTO\Category\delete\DeleteCategoryOutputDTO;
+use Core\UseCase\DTO\Category\Delete\DeleteCategoryOutputDTO;
 
 class DeleteCategoryUseCase
 {

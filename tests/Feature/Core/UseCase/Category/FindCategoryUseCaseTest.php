@@ -6,7 +6,7 @@ use App\Models\Category as CategoryModel;
 use App\Repositories\Eloquent\CategoryEloquentRepository;
 use Core\UseCase\Category\FindCategoryUseCase;
 use Core\UseCase\DTO\Category\CategoryInputDTO;
-use Core\UseCase\DTO\Category\find\FindCategoryOutputDTO;
+use Core\UseCase\DTO\Category\Find\FindCategoryOutputDTO;
 use Tests\TestCase;
 
 class FindCategoryUseCaseTest extends TestCase
