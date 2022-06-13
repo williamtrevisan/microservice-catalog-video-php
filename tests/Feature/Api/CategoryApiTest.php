@@ -3,8 +3,6 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Category;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Response;
 use Tests\TestCase;
 
@@ -17,6 +15,7 @@ class CategoryApiTest extends TestCase
         $response = $this->getJson($this->endpoint);
 
         $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonCount(0, 'data');
     }
 
     public function testListAllCategories()
@@ -26,6 +25,7 @@ class CategoryApiTest extends TestCase
         $response = $this->getJson($this->endpoint);
 
         $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonCount(15, 'data');
         $response->assertJsonStructure([
             'meta' => [
                 'total',
@@ -41,13 +41,14 @@ class CategoryApiTest extends TestCase
 
     public function testListPaginateCategories()
     {
-        Category::factory()->count(30)->create();
+        Category::factory()->count(24)->create();
 
         $response = $this->getJson("$this->endpoint?page=2");
 
         $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonCount(9, 'data');
         $this->assertEquals(2, $response['meta']['current_page']);
-        $this->assertEquals(30, $response['meta']['total']);
+        $this->assertEquals(24, $response['meta']['total']);
     }
 
     public function testFindCategoryNotFound()
