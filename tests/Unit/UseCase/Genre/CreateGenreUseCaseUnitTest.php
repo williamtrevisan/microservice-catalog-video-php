@@ -18,6 +18,31 @@ use stdClass;
 
 class CreateGenreUseCaseUnitTest extends TestCase
 {
+    protected $genreId;
+    protected $genreEntity;
+    protected $genreRepository;
+    protected $transaction;
+
+    protected function setUp(): void
+    {
+        $this->genreId = RamseyUuid::uuid4()->toString();
+        $this->genreEntity = Mockery::mock(Genre::class, [
+            'Genre name',
+            new Uuid($this->genreId)
+        ]);
+        $this->genreEntity->shouldReceive('id')->andReturn($this->genreId);
+        $this->genreEntity->shouldReceive('createdAt')->andReturn(date('Y-m-d H:i:s'));
+        $this->genreRepository =
+            Mockery::mock(stdClass::class, GenreRepositoryInterface::class);
+        $this->genreRepository->shouldReceive('insert')->andReturn($this->genreEntity);
+        $this->transaction =
+            Mockery::mock(stdClass::class, TransactionInterface::class);
+        $this->transaction->shouldReceive('commit');
+        $this->transaction->shouldReceive('rollback');
+
+        parent::setUp();
+    }
+
     protected function tearDown(): void
     {
         Mockery::close();
@@ -34,41 +59,34 @@ class CreateGenreUseCaseUnitTest extends TestCase
             ->shouldReceive('getIdsByListId')
             ->once()
             ->andReturn([$categoryId]);
-        $genreId = RamseyUuid::uuid4()->toString();
-        $genreEntity = Mockery::mock(Genre::class, ['Genre name', new Uuid($genreId)]);
-        $genreEntity->shouldReceive('id')->once()->andReturn($genreId);
-        $genreEntity
-            ->shouldReceive('createdAt')
-            ->once()
-            ->andReturn(date('Y-m-d H:i:s'));
-        $genreRepository = Mockery::mock(stdClass::class, GenreRepositoryInterface::class);
-        $genreRepository->shouldReceive('insert')->once()->andReturn($genreEntity);
-        $transaction = Mockery::mock(stdClass::class, TransactionInterface::class);
-        $transaction->shouldReceive('commit')->once();
         $createGenreInputDTO = Mockery::mock(CreateGenreInputDTO::class, [
             'Genre name',
             [$categoryId]
         ]);
 
-        $createGenreUseCase =
-            new CreateGenreUseCase($categoryRepository, $genreRepository, $transaction);
+        $createGenreUseCase = new CreateGenreUseCase(
+            $categoryRepository,
+            $this->genreRepository,
+            $this->transaction
+        );
         $response = $createGenreUseCase->execute($createGenreInputDTO);
 
         $this->assertInstanceOf(CreateGenreOutputDTO::class, $response);
+        $this->genreEntity->shouldHaveReceived('id');
+        $this->genreEntity->shouldHaveReceived('createdAt');
+        $this->genreRepository->shouldHaveReceived('insert');
+        $this->transaction->shouldHaveReceived('commit');
     }
 
     public function testShouldThrowAnErrorWithNonexistentCategoryId()
     {
-        $categoryId = RamseyUuid::uuid4()->toString();
         $categoryRepository =
             Mockery::mock(stdClass::class, CategoryRepositoryInterface::class);
         $categoryRepository
             ->shouldReceive('getIdsByListId')
             ->once()
             ->andReturn([]);
-        $genreRepository = Mockery::mock(stdClass::class, GenreRepositoryInterface::class);
-        $transaction = Mockery::mock(stdClass::class, TransactionInterface::class);
-        $transaction->shouldReceive('rollback')->once();
+        $categoryId = RamseyUuid::uuid4()->toString();
         $createGenreInputDTO = Mockery::mock(CreateGenreInputDTO::class, [
             'Genre name',
             [$categoryId]
@@ -79,24 +97,26 @@ class CreateGenreUseCaseUnitTest extends TestCase
             "Category with id: $categoryId, not found in database"
         );
 
-        $createGenreUseCase =
-            new CreateGenreUseCase($categoryRepository, $genreRepository, $transaction);
+        $createGenreUseCase = new CreateGenreUseCase(
+            $categoryRepository,
+            $this->genreRepository,
+            $this->transaction
+        );
         $createGenreUseCase->execute($createGenreInputDTO);
+
+        $this->transaction->shouldHaveReceived('rollback');
     }
 
     public function testShouldThrowAnErrorWithNonexistentCategoriesId()
     {
-        $categoryId1 = RamseyUuid::uuid4()->toString();
-        $categoryId2 = RamseyUuid::uuid4()->toString();
         $categoryRepository =
             Mockery::mock(stdClass::class, CategoryRepositoryInterface::class);
         $categoryRepository
             ->shouldReceive('getIdsByListId')
             ->once()
             ->andReturn([]);
-        $genreRepository = Mockery::mock(stdClass::class, GenreRepositoryInterface::class);
-        $transaction = Mockery::mock(stdClass::class, TransactionInterface::class);
-        $transaction->shouldReceive('rollback')->once();
+        $categoryId1 = RamseyUuid::uuid4()->toString();
+        $categoryId2 = RamseyUuid::uuid4()->toString();
         $createGenreInputDTO = Mockery::mock(CreateGenreInputDTO::class, [
             'Genre name',
             [$categoryId1, $categoryId2]
@@ -107,8 +127,13 @@ class CreateGenreUseCaseUnitTest extends TestCase
             "Categories with id: $categoryId1, $categoryId2, not found in database"
         );
 
-        $createGenreUseCase =
-            new CreateGenreUseCase($categoryRepository, $genreRepository, $transaction);
+        $createGenreUseCase = new CreateGenreUseCase(
+            $categoryRepository,
+            $this->genreRepository,
+            $this->transaction
+        );
         $createGenreUseCase->execute($createGenreInputDTO);
+
+        $this->transaction->shouldHaveReceived('rollback');
     }
 }
