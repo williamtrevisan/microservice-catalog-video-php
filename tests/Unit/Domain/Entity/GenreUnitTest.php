@@ -6,6 +6,7 @@ use Core\Domain\Entity\Genre;
 use Core\Domain\Exception\EntityValidationException;
 use Core\Domain\ValueObject\Uuid;
 use DateTime;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid as RamseyUuid;
 
@@ -71,5 +72,14 @@ class GenreUnitTest extends TestCase
         $this->expectException(EntityValidationException::class);
 
         new Genre(name: 'Ge');
+    }
+
+    public function testEntityUpdateException()
+    {
+        $this->expectException(EntityValidationException::class);
+
+        $genre = new Genre(name: 'Genre name');
+
+        $genre->update(name: Str::random(256));
     }
 }
