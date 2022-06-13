@@ -82,4 +82,12 @@ class GenreUnitTest extends TestCase
 
         $genre->update(name: Str::random(256));
     }
+
+    public function testAddCategoryToGenre()
+    {
+        $categoryId = RamseyUuid::uuid4()->toString();
+        $genre = new Genre(name: 'Genre name');
+
+        $genre->addCategory(categoryId: $categoryId);
+    }
 }
