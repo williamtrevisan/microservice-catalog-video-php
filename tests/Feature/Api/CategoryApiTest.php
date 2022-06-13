@@ -108,4 +108,46 @@ class CategoryApiTest extends TestCase
         $this->assertEquals($payload['name'], $response['data']['name']);
         $this->assertTrue($response['data']['is_active']);
     }
+
+    public function testUpdateNotFound()
+    {
+        $payload = ['name' => 'Category name updated'];
+
+        $response = $this->putJson("$this->endpoint/categoryId", $payload);
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testUpdateValidations()
+    {
+        $response = $this->putJson("$this->endpoint/categoryId", []);
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertJsonStructure([
+            'message',
+            'errors' => ['name']
+        ]);
+    }
+
+    public function testUpdate()
+    {
+        $category = Category::factory()->create();
+        $payload = ['name' => 'Category name updated'];
+
+        $response = $this->putJson("$this->endpoint/$category->id", $payload);
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+                'name',
+                'description',
+                'is_active',
+                'created_at'
+            ],
+        ]);
+        $this->assertEquals($payload['name'], $response['data']['name']);
+        $this->assertTrue($response['data']['is_active']);
+        $this->assertDatabaseHas('categories', ['name' => 'Category name updated']);
+    }
 }

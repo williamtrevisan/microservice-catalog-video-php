@@ -93,7 +93,7 @@ class CategoryController extends Controller
 
         $category = $updateCategoryUseCase->execute(input: $updateCategoryInputDTO);
 
-        return (new CategoryResource(collect($category)))
+        return (new CategoryResource($category))
             ->response()
             ->setStatusCode(Response::HTTP_OK);
     }
