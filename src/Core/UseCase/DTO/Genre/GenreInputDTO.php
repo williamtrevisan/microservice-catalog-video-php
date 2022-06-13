@@ -1,8 +1,8 @@
 <?php
 
-namespace Core\UseCase\DTO\Category;
+namespace Core\UseCase\DTO\Genre;
 
-class CategoryInputDTO
+class GenreInputDTO
 {
     public function __construct(public string $id = '') {}
 }

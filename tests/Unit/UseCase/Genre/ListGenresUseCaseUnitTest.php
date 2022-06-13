@@ -19,8 +19,7 @@ class ListGenresUseCaseUnitTest extends TestCase
         $genreRepository
             ->shouldReceive('paginate')
             ->andReturn($this->getGenrePagination());
-        $listGenresInputDTO = Mockery::mock(
-            ListGenresInputDTO::class,
+        $listGenresInputDTO = Mockery::mock(ListGenresInputDTO::class,
             ['', 'DESC', 1, 15]
         );
 
