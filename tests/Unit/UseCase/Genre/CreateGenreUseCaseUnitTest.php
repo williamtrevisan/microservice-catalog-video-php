@@ -2,12 +2,14 @@
 
 namespace Tests\Unit\UseCase\Genre;
 
+use Core\Domain\Entity\Genre;
 use Core\Domain\Repository\CategoryRepositoryInterface;
 use Core\Domain\Repository\GenreRepositoryInterface;
+use Core\Domain\ValueObject\Uuid;
+use Core\UseCase\DTO\Genre\Create\CreateGenreInputDTO;
+use Core\UseCase\DTO\Genre\Create\CreateGenreOutputDTO;
 use Core\UseCase\Genre\CreateGenreUseCase;
 use Core\UseCase\Interface\TransactionInterface;
-use CreateGenreInputDTO;
-use CreateGenreOutputDTO;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid as RamseyUuid;
@@ -20,11 +22,21 @@ class CreateGenreUseCaseUnitTest extends TestCase
         $categoryId = RamseyUuid::uuid4()->toString();
         $categoryRepository =
             Mockery::mock(stdClass::class, CategoryRepositoryInterface::class);
-        $categoryRepository->shouldReceive('getIdsByListId')->once();
+        $categoryRepository
+            ->shouldReceive('getIdsByListId')
+            ->once()
+            ->andReturn([$categoryId]);
+        $genreId = RamseyUuid::uuid4()->toString();
+        $genreEntity = Mockery::mock(Genre::class, ['Genre name', new Uuid($genreId)]);
+        $genreEntity->shouldReceive('id')->once()->andReturn($genreId);
+        $genreEntity
+            ->shouldReceive('createdAt')
+            ->once()
+            ->andReturn(date('Y-m-d H:i:s'));
         $genreRepository = Mockery::mock(stdClass::class, GenreRepositoryInterface::class);
-        $genreRepository->shouldReceive('insert')->once();
+        $genreRepository->shouldReceive('insert')->once()->andReturn($genreEntity);
         $transaction = Mockery::mock(stdClass::class, TransactionInterface::class);
-        $transaction->shouldReceive('commit', 'rollback')->once();
+        $transaction->shouldReceive('commit')->once();
         $createGenreInputDTO = Mockery::mock(CreateGenreInputDTO::class, [
             'Genre name',
             [$categoryId]

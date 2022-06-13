@@ -1,5 +1,7 @@
 <?php
 
+namespace Core\UseCase\DTO\Genre\Create;
+
 class CreateGenreInputDTO
 {
     public function __construct(
