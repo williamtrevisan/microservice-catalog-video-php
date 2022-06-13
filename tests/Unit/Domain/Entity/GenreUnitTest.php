@@ -16,8 +16,8 @@ class GenreUnitTest extends TestCase
         $date = date('Y-m-d H:i:s');
 
         $genre = new Genre(
-            id: new Uuid($id),
             name: 'Genre name',
+            id: new Uuid($id),
             isActive: true,
             createdAt: new DateTime($date),
         );
@@ -30,13 +30,20 @@ class GenreUnitTest extends TestCase
 
     public function testAttributesCreate()
     {
-        $genre = new Genre(
-            name: 'Genre name',
-        );
+        $genre = new Genre(name: 'Genre name');
 
         $this->assertNotEmpty($genre->id());
         $this->assertEquals('Genre name', $genre->name);
         $this->assertTrue($genre->isActive);
         $this->assertNotEmpty($genre->createdAt());
+    }
+
+    public function testDeactivate()
+    {
+        $genre = new Genre(name: 'Genre name');
+
+        $genre->deactivate();
+
+        $this->assertFalse($genre->isActive);
     }
 }
