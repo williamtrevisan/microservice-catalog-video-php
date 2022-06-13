@@ -54,8 +54,15 @@ class CreateGenreUseCase
     {
         $categories = $this->categoryRepository->getIdsByListId($categoriesId);
 
-        if (count($categoriesId) !== count($categories)) {
-            throw new NotFoundException('Categories not found in database');
+        $arrayDifference = array_diff($categoriesId, $categories);
+        if ($arrayDifference) {
+            $message = sprintf(
+                '%s with id: %s, not found in database',
+                count($arrayDifference) > 1 ? 'Categories' : 'Category',
+                implode(', ', $arrayDifference)
+            );
+
+            throw new NotFoundException($message);
         }
     }
 }
