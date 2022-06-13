@@ -125,6 +125,6 @@ class GenreUnitTest extends TestCase
         $genre->removeCategory(categoryId: $categoryId1);
 
         $this->assertCount(1, $genre->categoriesId);
-        $this->assertEquals([$categoryId2], $genre->categoriesId);
+        $this->assertEquals([1 => $categoryId2], $genre->categoriesId);
     }
 }
