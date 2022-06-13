@@ -11,11 +11,10 @@ class Genre
 {
     use MagicMethodsTrait;
 
-    protected array $categoriesId = [];
-
     public function __construct(
         protected string $name,
         protected ?Uuid $id = null,
+        protected array $categoriesId = [],
         protected bool $isActive = true,
         protected ?DateTime $createdAt = null,
     ) {

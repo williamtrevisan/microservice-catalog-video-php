@@ -98,4 +98,18 @@ class GenreUnitTest extends TestCase
         $this->assertCount(2, $genre->categoriesId);
         $this->assertEquals([$categoryId, $categoryId], $genre->categoriesId);
     }
+
+    public function testAddCategoryWhenInstantiate()
+    {
+        $categoryId = RamseyUuid::uuid4()->toString();
+
+        $genre = new Genre(
+            name: 'Genre name',
+            categoriesId: [$categoryId, $categoryId]
+        );
+
+        $this->assertIsArray($genre->categoriesId);
+        $this->assertCount(2, $genre->categoriesId);
+        $this->assertEquals([$categoryId, $categoryId], $genre->categoriesId);
+    }
 }
