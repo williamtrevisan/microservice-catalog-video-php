@@ -24,6 +24,6 @@ trait MagicMethodsTrait
 
     public function createdAt(): string
     {
-        return $this->createdAt->format('Y-m-d h:i:s');
+        return $this->createdAt->format('Y-m-d H:i:s');
     }
 }
