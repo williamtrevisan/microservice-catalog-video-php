@@ -22,7 +22,11 @@ class FindGenreUseCaseUnitTest extends TestCase
         $genreEntity->shouldReceive('id')->andReturn($id);
         $genreEntity->shouldReceive('createdAt')->andReturn(date('Y-m-d H:i:s'));
         $genreRepository = Mockery::mock(stdClass::class, GenreRepositoryInterface::class);
-        $genreRepository->shouldReceive('findById')->andReturn($genreEntity);
+        $genreRepository
+            ->shouldReceive('findById')
+            ->once()
+            ->with($id)
+            ->andReturn($genreEntity);
         $genreInputDTO = Mockery::mock(GenreInputDTO::class, [$id]);
 
         $findGenreUseCase = new FindGenreUseCase($genreRepository);
@@ -33,5 +37,7 @@ class FindGenreUseCaseUnitTest extends TestCase
         $this->assertEquals('Genre name', $response->name);
         $this->assertTrue($response->is_active);
         $this->assertNotEmpty($response->created_at);
+
+        Mockery::close();
     }
 }
