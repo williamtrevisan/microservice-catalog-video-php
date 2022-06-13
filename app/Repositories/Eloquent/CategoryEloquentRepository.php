@@ -29,7 +29,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
     public function findById(string $id): CategoryEntity
     {
         $category = $this->categoryModel->find($id);
-        if (! $category) throw new NotFoundException("Category with $id not found");
+        if (! $category) throw new NotFoundException("Category with id: $id not found");
 
         return $this->toCategory($category);
     }
@@ -66,7 +66,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
     {
         $category = $this->categoryModel->find($categoryEntity->id());
         if (! $category) {
-            throw new NotFoundException("Category with {$categoryEntity->id()} not found");
+            throw new NotFoundException("Category with id: {$categoryEntity->id()} not found");
         }
 
         $category->update([
@@ -82,7 +82,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
     public function delete(string $id): bool
     {
         $category = $this->categoryModel->find($id);
-        if (! $category) throw new NotFoundException("Category with $id not found");
+        if (! $category) throw new NotFoundException("Category with id: $id not found");
 
         return $category->delete();
     }
