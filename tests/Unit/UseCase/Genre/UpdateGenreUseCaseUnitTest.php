@@ -31,10 +31,13 @@ class UpdateGenreUseCaseUnitTest extends TestCase
             new Uuid($this->genreId)
         ]);
         $this->genreEntity->shouldReceive('id')->andReturn($this->genreId);
-        $this->genreEntity->shouldReceive('updatedAt')->andReturn(date('Y-m-d H:i:s'));
+        $this->genreEntity->shouldReceive('createdAt')->andReturn(date('Y-m-d H:i:s'));
+        $this->genreEntity->shouldReceive('update', 'addCategory');
         $this->genreRepository =
             Mockery::mock(stdClass::class, GenreRepositoryInterface::class);
-        $this->genreRepository->shouldReceive('insert')->andReturn($this->genreEntity);
+        $this->genreRepository
+            ->shouldReceive('findById', 'update')
+            ->andReturn($this->genreEntity);
         $this->transaction =
             Mockery::mock(stdClass::class, TransactionInterface::class);
         $this->transaction->shouldReceive('commit');
@@ -60,7 +63,8 @@ class UpdateGenreUseCaseUnitTest extends TestCase
             ->once()
             ->andReturn([$categoryId]);
         $updateGenreInputDTO = Mockery::mock(UpdateGenreInputDTO::class, [
-            'Genre name',
+            $this->genreId,
+            'Genre name updated',
             [$categoryId]
         ]);
 
@@ -73,9 +77,36 @@ class UpdateGenreUseCaseUnitTest extends TestCase
 
         $this->assertInstanceOf(UpdateGenreOutputDTO::class, $response);
         $this->genreEntity->shouldHaveReceived('id');
-        $this->genreEntity->shouldHaveReceived('updatedAt');
-        $this->genreRepository->shouldHaveReceived('insert');
+        $this->genreEntity->shouldHaveReceived('createdAt');
+        $this->genreEntity->shouldHaveReceived('update');
+        $this->genreEntity->shouldHaveReceived('addCategory');
+        $this->genreRepository->shouldHaveReceived('update');
         $this->transaction->shouldHaveReceived('commit');
+    }
+
+    public function testShouldNotHaveReceivedAddCategoryIfCategoriesIdIsEmpty()
+    {
+        $categoryId = RamseyUuid::uuid4()->toString();
+        $categoryRepository =
+            Mockery::mock(stdClass::class, CategoryRepositoryInterface::class);
+        $categoryRepository
+            ->shouldReceive('getIdsByListId')
+            ->once()
+            ->andReturn([$categoryId]);
+        $updateGenreInputDTO = Mockery::mock(UpdateGenreInputDTO::class, [
+            $this->genreId,
+            'Genre name updated',
+        ]);
+
+        $updateGenreUseCase = new UpdateGenreUseCase(
+            $categoryRepository,
+            $this->genreRepository,
+            $this->transaction
+        );
+        $response = $updateGenreUseCase->execute($updateGenreInputDTO);
+
+        $this->assertInstanceOf(UpdateGenreOutputDTO::class, $response);
+        $this->genreEntity->shouldNotHaveReceived('addCategory');
     }
 
     public function testShouldThrowAnErrorWithNonexistentCategoryId()
@@ -88,7 +119,8 @@ class UpdateGenreUseCaseUnitTest extends TestCase
             ->andReturn([]);
         $categoryId = RamseyUuid::uuid4()->toString();
         $updateGenreInputDTO = Mockery::mock(UpdateGenreInputDTO::class, [
-            'Genre name',
+            $this->genreId,
+            'Genre name updated',
             [$categoryId]
         ]);
 
@@ -118,7 +150,8 @@ class UpdateGenreUseCaseUnitTest extends TestCase
         $categoryId1 = RamseyUuid::uuid4()->toString();
         $categoryId2 = RamseyUuid::uuid4()->toString();
         $updateGenreInputDTO = Mockery::mock(UpdateGenreInputDTO::class, [
-            'Genre name',
+            $this->genreId,
+            'Genre name updated',
             [$categoryId1, $categoryId2]
         ]);
 

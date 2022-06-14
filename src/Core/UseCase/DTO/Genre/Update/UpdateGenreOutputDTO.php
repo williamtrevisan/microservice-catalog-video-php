@@ -1,8 +1,8 @@
 <?php
 
-namespace Core\UseCase\DTO\Genre\Create;
+namespace Core\UseCase\DTO\Genre\Update;
 
-class CreateGenreOutputDTO
+class UpdateGenreOutputDTO
 {
     public function __construct(
         public string $id,
