@@ -23,4 +23,9 @@ class Genre extends Model
         'is_active' => 'boolean',
         'deleted_at' => 'datetime',
     ];
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
 }
