@@ -74,6 +74,9 @@ class GenreEloquentRepository implements GenreRepositoryInterface
         $genre = $this->genreModel->find($genreEntity->id());
 
         $genre->update(['name' => $genreEntity->name]);
+        if ($genreEntity->categoriesId) {
+            $genre->categories()->sync($genreEntity->categoriesId);
+        }
         $genre->refresh();
 
         return $this->toGenre($genre);
