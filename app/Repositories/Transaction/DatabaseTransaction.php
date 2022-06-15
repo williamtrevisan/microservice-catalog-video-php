@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Transaction;
+namespace App\Repositories\Tran saction;
 
 use Core\UseCase\Interface\TransactionInterface;
 use Illuminate\Support\Facades\DB;

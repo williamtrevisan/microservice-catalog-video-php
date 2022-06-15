@@ -2,6 +2,7 @@
 
 namespace Core\Domain\Repository;
 
+use App\Models\Genre as GenreModel;
 use Core\Domain\Entity\Genre;
 
 interface GenreRepositoryInterface
@@ -17,5 +18,5 @@ interface GenreRepositoryInterface
     ): PaginationInterface;
     public function update(Genre $genreEntity): Genre;
     public function delete(string $id): bool;
-    public function toGenre(object $data): Genre;
+    public function toGenre(GenreModel $genreModel): Genre;
 }

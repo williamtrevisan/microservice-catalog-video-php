@@ -13,7 +13,7 @@ use Throwable;
 
 class CategoryEloquentRepositoryTest extends TestCase
 {
-    protected $categoryEloquentRepository;
+    protected CategoryRepositoryInterface $categoryEloquentRepository;
 
     protected function setUp(): void
     {
@@ -39,7 +39,7 @@ class CategoryEloquentRepositoryTest extends TestCase
         $this->assertDatabaseHas('categories', ['name' => 'Category name']);
     }
 
-    public function findById()
+    public function testFindById()
     {
         $categoryModel = CategoryModel::factory()->create();
 

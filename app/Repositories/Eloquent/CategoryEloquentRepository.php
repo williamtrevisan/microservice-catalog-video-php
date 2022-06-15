@@ -26,6 +26,9 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
         return $this->toCategory($category);
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function findById(string $id): CategoryEntity
     {
         $category = $this->categoryModel->find($id);
@@ -46,7 +49,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
     {
         $categories = $this->categoryModel
             ->where(function($query) use ($filter) {
-                if ($filter) $query->where('name', 'ILIKE', "%$filter%");
+                if ($filter) $query->where('name', 'LIKE', "%$filter%");
             })
             ->orderBy('id', $order)
             ->get();
@@ -62,7 +65,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
     ): PaginationInterface {
         $categories = $this->categoryModel
             ->where(function($query) use ($filter) {
-                if ($filter) $query->where('name', 'ILIKE', "%$filter%");
+                if ($filter) $query->where('name', 'LIKE', "%$filter%");
             })
             ->orderBy('id', $order)
             ->paginate();
@@ -70,6 +73,9 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
         return new PaginationPresenter($categories);
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function update(CategoryEntity $categoryEntity): CategoryEntity
     {
         $category = $this->categoryModel->find($categoryEntity->id());
@@ -78,15 +84,18 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
         }
 
         $category->update([
-            'name' =>$categoryEntity->name,
-            'description' =>$categoryEntity->description,
-            'is_active' =>$categoryEntity->isActive,
+            'name' => $categoryEntity->name,
+            'description' => $categoryEntity->description,
+            'is_active' => $categoryEntity->isActive,
         ]);
         $category->refresh();
 
         return $this->toCategory($category);
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function delete(string $id): bool
     {
         $category = $this->categoryModel->find($id);
