@@ -93,7 +93,7 @@ class GenreEloquentRepository implements GenreRepositoryInterface
         return $genre->delete();
     }
 
-    public function toGenre(GenreModel $genreModel): GenreEntity
+    private function toGenre(GenreModel $genreModel): GenreEntity
     {
         $genreEntity = new GenreEntity(
             name: $genreModel->name,

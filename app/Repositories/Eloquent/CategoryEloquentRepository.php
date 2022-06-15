@@ -104,7 +104,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
         return $category->delete();
     }
 
-    public function toCategory(object $data): CategoryEntity
+    private function toCategory(object $data): CategoryEntity
     {
         $categoryEntity = new CategoryEntity(
             id: $data->id,

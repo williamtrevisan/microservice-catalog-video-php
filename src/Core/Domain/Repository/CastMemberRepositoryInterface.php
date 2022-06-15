@@ -2,13 +2,12 @@
 
 namespace Core\Domain\Repository;
 
-use Core\Domain\Entity\Category;
+use Core\Domain\Entity\CastMember;
 
-interface CategoryRepositoryInterface
+interface CastMemberRepositoryInterface
 {
-    public function insert(Category $categoryEntity): Category;
-    public function findById(string $id): Category;
-    public function getIdsByListId(array $categoriesId = []): array;
+    public function insert(CastMember $castMemberEntity): CastMember;
+    public function findById(string $id): CastMember;
     public function findAll(string $filter = '', string $order = 'DESC'): array;
     public function paginate(
         string $filter = '',
@@ -16,6 +15,6 @@ interface CategoryRepositoryInterface
         int $page = 1,
         int $totalPage = 15
     ): PaginationInterface;
-    public function update(Category $categoryEntity): Category;
+    public function update(CastMember $castMemberEntity): CastMember;
     public function delete(string $id): bool;
 }

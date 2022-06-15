@@ -18,5 +18,4 @@ interface GenreRepositoryInterface
     ): PaginationInterface;
     public function update(Genre $genreEntity): Genre;
     public function delete(string $id): bool;
-    public function toGenre(GenreModel $genreModel): Genre;
 }
