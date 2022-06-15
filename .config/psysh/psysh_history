@@ -1,0 +1,2 @@
+\App\Models\Genre::factory(68)->create();
+exit

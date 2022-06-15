@@ -72,7 +72,7 @@ class CategoryController extends Controller
     ): JsonResponse {
         $categoryInputDTO = new CategoryInputDTO(id: $id);
 
-        $category = $findCategoryUseCase->execute($categoryInputDTO);
+        $category = $findCategoryUseCase->execute(input: $categoryInputDTO);
 
         return (new CategoryResource($category))
             ->response()
@@ -104,7 +104,7 @@ class CategoryController extends Controller
     ): Response {
         $categoryInputDTO = new CategoryInputDTO(id: $id);
 
-        $deleteCategoryUseCase->execute($categoryInputDTO);
+        $deleteCategoryUseCase->execute(input: $categoryInputDTO);
 
         return response()->noContent();
     }

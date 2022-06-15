@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class CategoryApiTest extends TestCase
 {
-    protected $endpoint = '/api/categories';
+    protected string $endpoint = '/api/categories';
 
     public function testListEmptyCategories()
     {
