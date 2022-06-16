@@ -1,9 +1,8 @@
 <?php
 
-namespace Api;
+namespace App\Http\Controllers\Api;
 
 use App\Models\CastMember as CastMemberModel;
-use Core\Domain\Enum\CastMemberType;
 use Illuminate\Http\Response;
 use Tests\TestCase;
 

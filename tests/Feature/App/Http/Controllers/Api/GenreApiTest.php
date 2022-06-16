@@ -1,6 +1,6 @@
 <?php
 
-namespace Api;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Category as CategoryModel;
 use App\Models\Genre as GenreModel;
