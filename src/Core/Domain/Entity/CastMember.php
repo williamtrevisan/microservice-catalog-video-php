@@ -8,16 +8,16 @@ use Core\Domain\Validation\DomainValidation;
 use Core\Domain\ValueObject\Uuid;
 use DateTime;
 
-class CastMember
+class CastMember extends BaseEntity
 {
-    use MagicMethodsTrait;
-
     public function __construct(
         protected string $name,
         protected CastMemberType $type,
         protected ?Uuid $id = null,
         protected ?DateTime $createdAt = null,
     ) {
+        parent::__construct();
+
         $this->id = $this->id ?? Uuid::random();
         $this->createdAt = $this->createdAt ?? new DateTime();
 

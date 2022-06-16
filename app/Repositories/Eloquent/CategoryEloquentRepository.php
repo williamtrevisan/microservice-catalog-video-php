@@ -4,16 +4,15 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Category as CategoryModel;
 use App\Repositories\Presenters\PaginationPresenter;
-use Core\Domain\Entity\Category as CategoryEntity;
+use Core\Domain\Entity\{BaseEntity, Category as CategoryEntity};
 use Core\Domain\Exception\NotFoundException;
-use Core\Domain\Repository\CategoryRepositoryInterface;
-use Core\Domain\Repository\PaginationInterface;
+use Core\Domain\Repository\{CategoryRepositoryInterface, PaginationInterface};
 
 class CategoryEloquentRepository implements CategoryRepositoryInterface
 {
     public function __construct(protected readonly CategoryModel $categoryModel) {}
 
-    public function insert(CategoryEntity $categoryEntity): CategoryEntity
+    public function insert(BaseEntity $categoryEntity): BaseEntity
     {
         $category = $this->categoryModel->create([
             'id' => $categoryEntity->id(),
@@ -29,7 +28,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
     /**
      * @throws NotFoundException
      */
-    public function findById(string $id): CategoryEntity
+    public function findById(string $id): BaseEntity
     {
         $category = $this->categoryModel->find($id);
         if (! $category) throw new NotFoundException("Category with id: $id not found");
@@ -76,7 +75,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
     /**
      * @throws NotFoundException
      */
-    public function update(CategoryEntity $categoryEntity): CategoryEntity
+    public function update(BaseEntity $categoryEntity): BaseEntity
     {
         $category = $this->categoryModel->find($categoryEntity->id());
         if (! $category) {
@@ -104,7 +103,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
         return $category->delete();
     }
 
-    private function toCategory(object $data): CategoryEntity
+    private function toCategory(object $data): BaseEntity
     {
         $categoryEntity = new CategoryEntity(
             id: $data->id,

@@ -7,10 +7,8 @@ use Core\Domain\Validation\DomainValidation;
 use Core\Domain\ValueObject\Uuid;
 use DateTime;
 
-class Category
+class Category extends BaseEntity
 {
-    use MagicMethodsTrait;
-
     public function __construct(
         protected Uuid|string $id = '',
         protected string $name = '',
@@ -18,6 +16,8 @@ class Category
         protected bool $isActive = true,
         protected DateTime|string $createdAt = '',
     ) {
+        parent::__construct();
+
         $this->id = $this->id ? new Uuid($this->id) : Uuid::random();
         $this->createdAt =
             $this->createdAt

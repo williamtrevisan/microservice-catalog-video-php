@@ -4,11 +4,10 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\CastMember as CastMemberModel;
 use App\Repositories\Presenters\PaginationPresenter;
-use Core\Domain\Entity\CastMember as CastMemberEntity;
+use Core\Domain\Entity\{BaseEntity, CastMember as CastMemberEntity};
 use Core\Domain\Enum\CastMemberType;
 use Core\Domain\Exception\NotFoundException;
-use Core\Domain\Repository\CastMemberRepositoryInterface;
-use Core\Domain\Repository\PaginationInterface;
+use Core\Domain\Repository\{CastMemberRepositoryInterface, PaginationInterface};
 use Core\Domain\ValueObject\Uuid;
 use DateTime;
 
@@ -16,7 +15,7 @@ class CastMemberEloquentRepository implements CastMemberRepositoryInterface
 {
     public function __construct(protected readonly CastMemberModel $castMemberModel) {}
 
-    public function insert(CastMemberEntity $castMemberEntity): CastMemberEntity
+    public function insert(BaseEntity $castMemberEntity): BaseEntity
     {
         $castMember = $this->castMemberModel->create([
             'id' => $castMemberEntity->id(),
@@ -31,12 +30,20 @@ class CastMemberEloquentRepository implements CastMemberRepositoryInterface
     /**
      * @throws NotFoundException
      */
-    public function findById(string $id): CastMemberEntity
+    public function findById(string $id): BaseEntity
     {
         $castMember = $this->castMemberModel->find($id);
         if (! $castMember) throw new NotFoundException("CastMember with id: $id not found");
 
         return $this->toCastMember($castMember);
+    }
+
+    public function getIdsByListId(array $castMembersId = []): array
+    {
+        return $this->castMemberModel
+            ->whereIn('id', $castMembersId)
+            ->pluck('id')
+            ->toArray();
     }
 
     public function findAll(string $filter = '', string $order = 'DESC'): array
@@ -68,7 +75,7 @@ class CastMemberEloquentRepository implements CastMemberRepositoryInterface
         return new PaginationPresenter($castMember);
     }
 
-    public function update(CastMemberEntity $castMemberEntity): CastMemberEntity
+    public function update(BaseEntity $castMemberEntity): BaseEntity
     {
         $castMember = $this->castMemberModel->find($castMemberEntity->id());
 
@@ -89,7 +96,7 @@ class CastMemberEloquentRepository implements CastMemberRepositoryInterface
         return $castMember->delete();
     }
 
-    private function toCastMember(CastMemberModel $castMemberModel): CastMemberEntity
+    private function toCastMember(CastMemberModel $castMemberModel): BaseEntity
     {
         $castMemberEntity = new CastMemberEntity(
             name: $castMemberModel->name,

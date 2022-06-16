@@ -4,10 +4,9 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Genre as GenreModel;
 use App\Repositories\Presenters\PaginationPresenter;
-use Core\Domain\Entity\Genre as GenreEntity;
+use Core\Domain\Entity\{BaseEntity, Genre as GenreEntity};
 use Core\Domain\Exception\NotFoundException;
-use Core\Domain\Repository\GenreRepositoryInterface;
-use Core\Domain\Repository\PaginationInterface;
+use Core\Domain\Repository\{GenreRepositoryInterface, PaginationInterface};
 use Core\Domain\ValueObject\Uuid;
 use DateTime;
 
@@ -15,7 +14,7 @@ class GenreEloquentRepository implements GenreRepositoryInterface
 {
     public function __construct(protected readonly GenreModel $genreModel) {}
 
-    public function insert(GenreEntity $genreEntity): GenreEntity
+    public function insert(BaseEntity $genreEntity): BaseEntity
     {
         $genre = $this->genreModel->create([
             'id' => $genreEntity->id(),
@@ -34,12 +33,20 @@ class GenreEloquentRepository implements GenreRepositoryInterface
     /**
      * @throws NotFoundException
      */
-    public function findById(string $id): GenreEntity
+    public function findById(string $id): BaseEntity
     {
         $genre = $this->genreModel->find($id);
         if (! $genre) throw new NotFoundException("Genre with id: $id not found");
 
         return $this->toGenre($genre);
+    }
+
+    public function getIdsByListId(array $genresId = []): array
+    {
+        return $this->genreModel
+            ->whereIn('id', $genresId)
+            ->pluck('id')
+            ->toArray();
     }
 
     public function findAll(string $filter = '', string $order = 'DESC'): array
@@ -69,7 +76,7 @@ class GenreEloquentRepository implements GenreRepositoryInterface
         return new PaginationPresenter($genre);
     }
 
-    public function update(GenreEntity $genreEntity): GenreEntity
+    public function update(BaseEntity $genreEntity): BaseEntity
     {
         $genre = $this->genreModel->find($genreEntity->id());
 
@@ -93,7 +100,7 @@ class GenreEloquentRepository implements GenreRepositoryInterface
         return $genre->delete();
     }
 
-    private function toGenre(GenreModel $genreModel): GenreEntity
+    private function toGenre(GenreModel $genreModel): BaseEntity
     {
         $genreEntity = new GenreEntity(
             name: $genreModel->name,

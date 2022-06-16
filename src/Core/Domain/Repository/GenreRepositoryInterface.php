@@ -2,20 +2,7 @@
 
 namespace Core\Domain\Repository;
 
-use App\Models\Genre as GenreModel;
-use Core\Domain\Entity\Genre;
-
-interface GenreRepositoryInterface
+interface GenreRepositoryInterface extends RepositoryInterface
 {
-    public function insert(Genre $genreEntity): Genre;
-    public function findById(string $id): Genre;
-    public function findAll(string $filter = '', string $order = 'DESC'): array;
-    public function paginate(
-        string $filter = '',
-        string $order = 'DESC',
-        int $page = 1,
-        int $totalPage = 15
-    ): PaginationInterface;
-    public function update(Genre $genreEntity): Genre;
-    public function delete(string $id): bool;
+    public function getIdsByListId(array $genresId = []): array;
 }

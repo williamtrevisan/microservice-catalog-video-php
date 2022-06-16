@@ -54,7 +54,7 @@ class VideoUnitTest extends TestCase
         $this->assertNotEmpty($video->id());
         $this->assertFalse($video->published);
         $this->assertNull($video->thumbFile());
-        $this->assertNull($video->thumbHalf());
+        $this->assertNull($video->thumbHalfFile());
         $this->assertNull($video->bannerFile());
         $this->assertNull($video->trailerFile());
         $this->assertNull($video->videoFile());
@@ -207,14 +207,14 @@ class VideoUnitTest extends TestCase
             duration: 190,
             opened: true,
             rating: Rating::Rate12,
-            thumbHalf: new Image(filePath: 'fakepath/thumbhalf/test.png'),
+            thumbHalfFile: new Image(filePath: 'fakepath/thumbhalf/test.png'),
         );
 
-        $this->assertNotNull($video->thumbHalf());
-        $this->assertInstanceOf(Image::class, $video->thumbHalf());
+        $this->assertNotNull($video->thumbHalfFile());
+        $this->assertInstanceOf(Image::class, $video->thumbHalfFile());
         $this->assertEquals(
             'fakepath/thumbhalf/test.png',
-            $video->thumbHalf()->filePath()
+            $video->thumbHalfFile()->filePath()
         );
     }
 
