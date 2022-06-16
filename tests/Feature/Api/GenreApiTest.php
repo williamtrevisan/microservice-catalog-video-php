@@ -40,7 +40,7 @@ class GenreApiTest extends TestCase
         ]);
     }
 
-    public function testShouldBeReturnAnErrorIfCategoriesIdIsEmpty()
+    public function testShouldBeReturnAnExceptionIfCategoriesIdIsEmpty()
     {
         $payload = ['name' => 'Genre name'];
 
@@ -53,7 +53,7 @@ class GenreApiTest extends TestCase
         ]);
     }
 
-    public function testShouldBeReturnAnErrorIfNameIsEmpty()
+    public function testShouldBeReturnAnExceptionIfNameIsEmpty()
     {
         $categories = CategoryModel::factory(3)->create();
         $payload = ['categories_id' => $categories->pluck('id')->toArray()];
@@ -67,7 +67,7 @@ class GenreApiTest extends TestCase
         ]);
     }
 
-    public function testShouldBeReturnAnErrorIfNameAndCategoriesIdAreEmpty()
+    public function testShouldBeReturnAnExceptionIfNameAndCategoriesIdAreEmpty()
     {
         $payload = [];
 
@@ -128,7 +128,7 @@ class GenreApiTest extends TestCase
         $this->assertEquals($genre->id, $response['data']['id']);
     }
 
-    public function testShouldBeReturnAnErrorIfCategoriesIdIsEmptyOnUpdateRoute()
+    public function testShouldBeReturnAnExceptionIfCategoriesIdIsEmptyOnUpdateRoute()
     {
         $genre = GenreModel::factory()->create();
         $payload = ['name' => 'Genre name'];
@@ -142,7 +142,7 @@ class GenreApiTest extends TestCase
         ]);
     }
 
-    public function testShouldBeReturnAnErrorIfNameIsEmptyOnUpdateRoute()
+    public function testShouldBeReturnAnExceptionIfNameIsEmptyOnUpdateRoute()
     {
         $genre = GenreModel::factory()->create();
         $categories = CategoryModel::factory(3)->create();
@@ -157,7 +157,7 @@ class GenreApiTest extends TestCase
         ]);
     }
 
-    public function testShouldBeReturnAnErrorIfNameAndCategoriesIdAreEmptyOnUpdateRoute()
+    public function testShouldBeReturnAnExceptionIfNameAndCategoriesIdAreEmptyOnUpdateRoute()
     {
         $genre = GenreModel::factory()->create();
         $payload = [];
