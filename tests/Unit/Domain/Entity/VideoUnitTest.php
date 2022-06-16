@@ -3,6 +3,7 @@
 namespace Domain\Entity;
 
 use Core\Domain\Entity\Video;
+use Core\Domain\Exception\NotificationException;
 use Core\Domain\Enum\{MediaStatus, Rating};
 use Core\Domain\ValueObject\{Image, Media, Uuid};
 use DateTime;
@@ -232,7 +233,7 @@ class VideoUnitTest extends TestCase
         $this->assertNotNull($video->bannerFile());
         $this->assertInstanceOf(Image::class, $video->bannerFile());
         $this->assertEquals(
-            'fakepath/thumbhalf/test.png',
+            'fakepath/banner-file/test.png',
             $video->bannerFile()->filePath()
         );
     }
@@ -285,6 +286,20 @@ class VideoUnitTest extends TestCase
         $this->assertEquals(
             'fakepath/video-file/test.mp4',
             $video->videoFile()->filePath
+        );
+    }
+
+    public function testShouldThrowAnExceptionWithIsInvalidTitleLength()
+    {
+        $this->expectException(NotificationException::class);
+
+        new Video(
+            title: 'Vi',
+            description: 'Video description',
+            yearLaunched: 2001,
+            duration: 190,
+            opened: true,
+            rating: Rating::Rate12,
         );
     }
 }
