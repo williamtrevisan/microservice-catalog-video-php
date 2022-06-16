@@ -11,7 +11,7 @@ class Notification
         $this->errors[] = $error;
     }
 
-    public function getErrors(): array
+    public function errors(): array
     {
         return $this->errors;
     }

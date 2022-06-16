@@ -23,8 +23,8 @@ class NotificationUnitTest extends TestCase
             'message' => 'error message'
         ]);
 
-        $this->assertNotEmpty($this->notification->getErrors());
-        $this->assertCount(1, $this->notification->getErrors());
+        $this->assertNotEmpty($this->notification->errors());
+        $this->assertCount(1, $this->notification->errors());
     }
 
     public function testShouldBeAbleCheckIfExistsErrors()
@@ -115,7 +115,7 @@ class NotificationUnitTest extends TestCase
             'message' => 'error message two'
         ]);
 
-        $errors = $this->notification->getErrors();
+        $errors = $this->notification->errors();
 
         $this->assertIsArray($errors);
         $this->assertCount(2, $errors);
@@ -125,7 +125,7 @@ class NotificationUnitTest extends TestCase
             'message' => 'error message three'
         ]);
 
-        $errors = $this->notification->getErrors();
+        $errors = $this->notification->errors();
 
         $this->assertCount(3, $errors);
     }
