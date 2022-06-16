@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use Core\Domain\Enum\CastMemberType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CastMember>
  */
-class CategoryFactory extends Factory
+class CastMemberFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,8 +21,8 @@ class CategoryFactory extends Factory
         return [
             'id' => Str::uuid()->toString(),
             'name' => $this->faker->name(),
-            'description' => $this->faker->sentence(10),
-            'is_active' => true,
+            'type' => CastMemberType::from(random_int(1, 2)),
+            'created_at' => now(),
         ];
     }
 }

@@ -1,17 +1,16 @@
 <?php
 
-namespace Tests\Unit\App\Models;
+namespace App\Models;
 
-use App\Models\Genre;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Tests\Unit\App\Models\ModelTestCase;
 
-class GenreUnitTest extends ModelTestCase
+class CastMemberUnitTest extends ModelTestCase
 {
-    protected function getModel(): Model
+    protected function getModel(): CastMember
     {
-        return new Genre();
+        return new CastMember();
     }
 
     protected function getTraits(): array
@@ -24,7 +23,7 @@ class GenreUnitTest extends ModelTestCase
         return [
             'id',
             'name',
-            'is_active',
+            'type',
             'created_at',
         ];
     }
@@ -33,7 +32,6 @@ class GenreUnitTest extends ModelTestCase
     {
         return [
             'id' => 'string',
-            'is_active' => 'boolean',
             'deleted_at' => 'datetime',
         ];
     }
