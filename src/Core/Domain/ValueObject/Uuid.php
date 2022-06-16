@@ -7,9 +7,7 @@ use Ramsey\Uuid\Nonstandard\Uuid as RamseyUuid;
 
 class Uuid
 {
-    public function __construct(
-        protected string $value
-    ) {
+    public function __construct(protected string $value) {
         $this->ensureIsValid($value);
     }
 
