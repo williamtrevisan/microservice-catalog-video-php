@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Domain\Entity;
+namespace Domain\Entity;
 
 use Core\Domain\Entity\CastMember;
 use Core\Domain\Enum\CastMemberType;

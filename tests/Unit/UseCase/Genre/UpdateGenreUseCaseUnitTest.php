@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\UseCase\Genre;
+namespace UseCase\Genre;
 
 use Core\Domain\Entity\Genre;
 use Core\Domain\Exception\NotFoundException;

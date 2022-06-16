@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Api;
 
 use App\Models\Category as CategoryModel;
 use App\Models\Genre as GenreModel;

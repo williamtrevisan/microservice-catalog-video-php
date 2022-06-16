@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Api;
 
 use App\Models\Category;
 use Illuminate\Http\Response;

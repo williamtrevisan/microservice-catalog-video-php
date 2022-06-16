@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\App\Repositories;
+namespace App\Repositories;
 
 use App\Models\Category as CategoryModel;
 use App\Repositories\Eloquent\CategoryEloquentRepository;
