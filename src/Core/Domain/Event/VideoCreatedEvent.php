@@ -2,11 +2,11 @@
 
 namespace Core\Domain\Event;
 
-use Core\Domain\Entity\Video;
+use Core\Domain\Entity\BaseEntity;
 
 class VideoCreatedEvent implements EventInterface
 {
-    public function __construct(protected readonly Video $video) {}
+    public function __construct(protected readonly BaseEntity $video) {}
 
     public function eventName(): string
     {

@@ -2,9 +2,9 @@
 
 namespace Core\UseCase\Video;
 
-use Core\Domain\Entity\Video as VideoEntity;
-use Core\Domain\Enum\MediaStatus;
-use Core\Domain\Enum\Rating;
+use Core\Domain\Builder\Video\VideoBuilder;
+use Core\Domain\Entity\BaseEntity;
+use Core\Domain\Enum\{MediaStatus};
 use Core\Domain\Event\VideoCreatedEvent;
 use Core\Domain\Exception\NotFoundException;
 use Core\Domain\Repository\CastMemberRepositoryInterface;
@@ -12,16 +12,13 @@ use Core\Domain\Repository\CategoryRepositoryInterface;
 use Core\Domain\Repository\GenreRepositoryInterface;
 use Core\Domain\Repository\RepositoryInterface;
 use Core\Domain\Repository\VideoRepositoryInterface;
-use Core\Domain\ValueObject\Image;
-use Core\Domain\ValueObject\Media;
-use Core\UseCase\DTO\Video\Create\CreateVideoInputDTO;
-use Core\UseCase\DTO\Video\Create\CreateVideoOutputDTO;
+use Core\UseCase\DTO\Video\Create\{CreateVideoInputDTO, CreateVideoOutputDTO};
 use Core\UseCase\Interface\{EventDispatcherInterface, FileStorageInterface, TransactionInterface};
 use Exception;
 
 class CreateVideoUseCase
 {
-    private readonly VideoEntity $videoEntity;
+    private readonly VideoBuilder $videoBuilder;
 
     public function __construct(
         protected readonly CastMemberRepositoryInterface $castMemberRepository,
@@ -31,21 +28,22 @@ class CreateVideoUseCase
         protected readonly TransactionInterface $transaction,
         protected readonly FileStorageInterface $fileStorage,
         protected readonly EventDispatcherInterface $eventDispatcher,
-    ) {}
+    ) {
+        $this->videoBuilder = new VideoBuilder;
+    }
 
     /**
      * @throws Exception
      */
     public function execute(CreateVideoInputDTO $input): CreateVideoOutputDTO
     {
+        $this->validateAllEntitiesId($input);
+        $this->videoBuilder->createEntity($input);
+
         try {
-            $this->createVideoEntity($input);
-
-            $this->videoRepository->insert($this->videoEntity);
-
+            $this->videoRepository->insert($this->videoBuilder->getEntity());
             $this->storageFiles($input);
-
-            $this->videoRepository->updateMedia($this->videoEntity);
+            $this->videoRepository->updateMedia($this->videoBuilder->getEntity());
 
             $this->transaction->commit();
 
@@ -53,35 +51,7 @@ class CreateVideoUseCase
         } catch (Exception $exception) {
             $this->transaction->rollback();
 
-            if (isset($mediaPath)) $this->fileStorage->delete($mediaPath);
-
             throw $exception;
-        }
-    }
-
-    private function createVideoEntity(CreateVideoInputDTO $input): void
-    {
-        $this->validateAllEntitiesId($input);
-
-        $this->videoEntity = new VideoEntity(
-            title: $input->title,
-            description: $input->description,
-            yearLaunched: $input->yearLaunched,
-            duration: $input->duration,
-            opened: $input->opened,
-            rating: Rating::from($input->rating),
-        );
-
-        foreach ($input->castMembersId as $castMemberId) {
-            $this->videoEntity->addCastMember($castMemberId);
-        }
-
-        foreach ($input->categoriesId as $categoryId) {
-            $this->videoEntity->addCategory($categoryId);
-        }
-
-        foreach ($input->genresId as $genreId) {
-            $this->videoEntity->addGenre($genreId);
         }
     }
 
@@ -145,54 +115,63 @@ class CreateVideoUseCase
 
     private function storageThumbFile(object $input): void
     {
-        $mediaPath = $this->storageFile($this->videoEntity->id(), $input->thumbFile);
-        if (! $mediaPath) return;
+        $filePath = $this->storageFile(
+            filePath: $this->videoBuilder->getEntity()->id(),
+            media: $input->thumbFile
+        );
+        if (! $filePath) return;
 
-        $this->videoEntity->changeThumbFile(new Image(filePath: $mediaPath));
+        $this->videoBuilder->addThumbFile(filePath: $filePath);
     }
 
     private function storageThumbHalfFile(object $input): void
     {
-        $mediaPath = $this->storageFile($this->videoEntity->id(), $input->thumbHalfFile);
-        if (! $mediaPath) return;
+        $filePath = $this->storageFile(
+            filePath: $this->videoBuilder->getEntity()->id(),
+            media: $input->thumbHalfFile
+        );
+        if (! $filePath) return;
 
-        $this->videoEntity->changeThumbHalfFile(new Image(filePath: $mediaPath));
+        $this->videoBuilder->addThumbHalfFile(filePath: $filePath);
     }
 
     private function storageBannerFile(object $input): void
     {
-        $mediaPath = $this->storageFile($this->videoEntity->id(), $input->bannerFile);
-        if (! $mediaPath) return;
+        $filePath = $this->storageFile(
+            filePath: $this->videoBuilder->getEntity()->id(),
+            media: $input->bannerFile
+        );
+        if (! $filePath) return;
 
-        $this->videoEntity->changeBannerFile(new Image(filePath: $mediaPath));
+        $this->videoBuilder->addBannerFile(filePath: $filePath);
     }
 
     private function storageTrailerFile(object $input): void
     {
-        $mediaPath = $this->storageFile($this->videoEntity->id(), $input->trailerFile);
-        if (! $mediaPath) return;
-
-        $trailerFile = new Media(
-            filePath: $mediaPath,
-            status: MediaStatus::Processing,
+        $filePath = $this->storageFile(
+            filePath: $this->videoBuilder->getEntity()->id(),
+            media: $input->trailerFile
         );
+        if (! $filePath) return;
 
-        $this->videoEntity->changeTrailerFile($trailerFile);
+        $this->videoBuilder->addTrailerFile(filePath: $filePath);
     }
 
     private function storageVideoFile(object $input): void
     {
-        $mediaPath = $this->storageFile($this->videoEntity->id(), $input->videoFile);
-        if (! $mediaPath) return;
+        $filePath = $this->storageFile(
+            filePath: $this->videoBuilder->getEntity()->id(),
+            media: $input->videoFile
+        );
+        if (! $filePath) return;
 
-        $videoFile = new Media(
-            filePath: $mediaPath,
-            status: MediaStatus::Processing,
+        $this->videoBuilder->addVideoFile(
+            filePath: $filePath,
+            status: MediaStatus::Processing
         );
 
-        $this->videoEntity->changeVideoFile($videoFile);
-
-        $this->eventDispatcher->dispatch(new VideoCreatedEvent($this->videoEntity));
+        $videoCreatedEvent = new VideoCreatedEvent($this->videoBuilder->getEntity());
+        $this->eventDispatcher->dispatch(event: $videoCreatedEvent);
     }
 
     private function storageFile(string $filePath, array $media = []): ?string
@@ -204,24 +183,26 @@ class CreateVideoUseCase
 
     private function output(): CreateVideoOutputDTO
     {
+        $videoEntity = $this->videoBuilder->getEntity();
+
         return new CreateVideoOutputDTO(
-            id: $this->videoEntity->id(),
-            title: $this->videoEntity->title,
-            description: $this->videoEntity->description,
-            year_launched: $this->videoEntity->yearLaunched,
-            duration: $this->videoEntity->duration,
-            opened: $this->videoEntity->opened,
-            rating: $this->videoEntity->rating->value,
-            published: $this->videoEntity->published,
-            created_at: $this->videoEntity->createdAt(),
-            castMembersId: $this->videoEntity->castMembersId,
-            categoriesId: $this->videoEntity->categoriesId,
-            genresId: $this->videoEntity->genresId,
-            thumbFile: $this->videoEntity->thumbFile()?->filePath(),
-            thumbHalfFile: $this->videoEntity->thumbHalfFile()?->filePath(),
-            bannerFile: $this->videoEntity->bannerFile()?->filePath(),
-            trailerFile: $this->videoEntity->trailerFile()?->filePath,
-            videoFile: $this->videoEntity->videoFile()?->filePath,
+            id: $videoEntity->id(),
+            title: $videoEntity->title,
+            description: $videoEntity->description,
+            year_launched: $videoEntity->yearLaunched,
+            duration: $videoEntity->duration,
+            opened: $videoEntity->opened,
+            rating: $videoEntity->rating->value,
+            published: $videoEntity->published,
+            created_at: $videoEntity->createdAt(),
+            castMembersId: $videoEntity->castMembersId,
+            categoriesId: $videoEntity->categoriesId,
+            genresId: $videoEntity->genresId,
+            thumbFile: $videoEntity->thumbFile()?->filePath(),
+            thumbHalfFile: $videoEntity->thumbHalfFile()?->filePath(),
+            bannerFile: $videoEntity->bannerFile()?->filePath(),
+            trailerFile: $videoEntity->trailerFile()?->filePath,
+            videoFile: $videoEntity->videoFile()?->filePath,
         );
     }
 }
