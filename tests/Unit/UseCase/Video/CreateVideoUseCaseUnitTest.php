@@ -22,7 +22,10 @@ class CreateVideoUseCaseUnitTest extends TestCase
     private CastMemberRepositoryInterface $castMemberRepository;
     private CategoryRepositoryInterface $categoryRepository;
     private GenreRepositoryInterface $genreRepository;
+    private VideoRepositoryInterface $videoRepository;
     private TransactionInterface $transaction;
+    private FileStorageInterface $fileStorage;
+    private EventDispatcherInterface $eventDispatcher;
     private CreateVideoUseCase $createVideoUseCase;
 
     protected function setUp(): void
@@ -33,15 +36,18 @@ class CreateVideoUseCaseUnitTest extends TestCase
         $this->castMemberRepository = $this->createCastMemberRepositoryMock();
         $this->categoryRepository = $this->createCategoryRepositoryMock();
         $this->genreRepository = $this->createGenreRepositoryMock();
+        $this->videoRepository = $this->createVideoRepositoryMock();
         $this->transaction = $this->createTransactionMock();
+        $this->fileStorage = $this->createFileStorageMock();
+        $this->eventDispatcher = $this->createEventDispatcherMock();
         $this->createVideoUseCase = new CreateVideoUseCase(
             castMemberRepository: $this->castMemberRepository,
             categoryRepository: $this->categoryRepository,
             genreRepository: $this->genreRepository,
-            videoRepository: $this->createVideoRepositoryMock(),
+            videoRepository: $this->videoRepository,
             transaction: $this->transaction,
-            fileStorage: $this->createFileStorageMock(),
-            eventDispatcher: $this->createEventDispatcherMock(),
+            fileStorage: $this->fileStorage,
+            eventDispatcher: $this->eventDispatcher,
         );
     }
 
@@ -152,6 +158,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
                 'bannerFile' => ['file' => [], 'expected' => null],
                 'trailerFile' => ['file' => [], 'expected' => null],
                 'videoFile' => ['file' => [], 'expected' => null],
+                'allFilesEmpty' => true,
             ],
             'four files empty' => [
                 'thumbFile' => ['file' => [], 'expected' => null],
@@ -162,6 +169,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
                     'file' => ['tmp' => 'tmp/video-file.mp4'],
                     'expected' => 'tmp/video-file.mp4',
                 ],
+                'allFilesEmpty' => false,
             ],
             'three files empty' => [
                 'thumbFile' => ['file' => [], 'expected' => null],
@@ -175,6 +183,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
                     'file' => ['tmp' => 'tmp/video-file.mp4'],
                     'expected' => 'tmp/video-file.mp4',
                 ],
+                'allFilesEmpty' => false,
             ],
             'two files empty' => [
                 'thumbFile' => ['file' => [], 'expected' => null],
@@ -191,6 +200,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
                     'file' => ['tmp' => 'tmp/video-file.mp4'],
                     'expected' => 'tmp/video-file.mp4',
                 ],
+                'allFilesEmpty' => false,
             ],
             'one file empty' => [
                 'thumbFile' => [
@@ -210,6 +220,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
                     'file' => ['tmp' => 'tmp/video-file.mp4'],
                     'expected' => 'tmp/video-file.mp4',
                 ],
+                'allFilesEmpty' => false,
             ],
             'empty even files' => [
                 'thumbFile' => [
@@ -226,6 +237,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
                     'file' => ['tmp' => 'tmp/video-file.mp4'],
                     'expected' => 'tmp/video-file.mp4',
                 ],
+                'allFilesEmpty' => false,
             ],
             'empty odd files' => [
                 'thumbFile' => ['file' => [], 'expected' => null],
@@ -239,6 +251,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
                     'expected' => 'tmp/video-file.mp4',
                 ],
                 'videoFile' => ['file' => [], 'expected' => null],
+                'allFilesEmpty' => false,
             ],
             'all files with path' => [
                 'thumbFile' => [
@@ -261,6 +274,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
                     'file' => ['tmp' => 'tmp/video-file.mp4'],
                     'expected' => 'tmp/video-file.mp4',
                 ],
+                'allFilesEmpty' => false,
             ],
         ];
     }
@@ -307,16 +321,19 @@ class CreateVideoUseCaseUnitTest extends TestCase
 
         $this->transaction->shouldHaveReceived('rollback');
         if ($isCastMember) {
+            $this->videoEntity->shouldHaveReceived('addCastMember');
             $this->castMemberRepository->shouldHaveReceived('getIdsByListId');
             $this->categoryRepository->shouldNotHaveReceived('getIdsByListId');
             $this->genreRepository->shouldNotHaveReceived('getIdsByListId');
         }
         if ($isCategory) {
+            $this->videoEntity->shouldHaveReceived('addCategory');
             $this->castMemberRepository->shouldNotHaveReceived('getIdsByListId');
             $this->categoryRepository->shouldHaveReceived('getIdsByListId');
             $this->genreRepository->shouldNotHaveReceived('getIdsByListId');
         }
         if ($isGenre) {
+            $this->videoEntity->shouldHaveReceived('addGenre');
             $this->castMemberRepository->shouldNotHaveReceived('getIdsByListId');
             $this->categoryRepository->shouldNotHaveReceived('getIdsByListId');
             $this->genreRepository->shouldHaveReceived('getIdsByListId');
@@ -343,6 +360,15 @@ class CreateVideoUseCaseUnitTest extends TestCase
         $this->assertInstanceOf(CreateVideoOutputDTO::class, $response);
         $this->castMemberRepository->shouldNotHaveReceived('getIdsByListId');
         $this->categoryRepository->shouldNotHaveReceived('getIdsByListId');
+        $this->genreRepository->shouldNotHaveReceived('getIdsByListId');
+        $this->videoEntity->shouldNotHaveReceived('addCastMember');
+        $this->videoEntity->shouldNotHaveReceived('addCategory');
+        $this->videoEntity->shouldNotHaveReceived('addGenre');
+        $this->videoRepository->shouldHaveReceived('insert');
+        $this->fileStorage->shouldNotHaveReceived('store');
+        $this->eventDispatcher->shouldNotHaveReceived('dispatch');
+        $this->videoRepository->shouldHaveReceived('updateMedia');
+        $this->transaction->shouldHaveReceived('commit');
     }
 
     /**
@@ -354,7 +380,8 @@ class CreateVideoUseCaseUnitTest extends TestCase
         array $thumbHalfFile,
         array $bannerFile,
         array $trailerFile,
-        array $videoFile
+        array $videoFile,
+        bool $allFilesEmpty
     ) {
         $createVideoInputDTO = new CreateVideoInputDTO(
             title: 'Video title',
@@ -375,6 +402,8 @@ class CreateVideoUseCaseUnitTest extends TestCase
 
         $response = $this->createVideoUseCase->execute(input: $createVideoInputDTO);
 
+        if (! $allFilesEmpty) $this->fileStorage->shouldHaveReceived('store');
+        if ($videoFile['file']) $this->eventDispatcher->shouldHaveReceived('dispatch');
         $this->assertEquals($thumbFile['expected'], $response->thumbFile);
         $this->assertEquals($thumbHalfFile['expected'], $response->thumbHalfFile);
         $this->assertEquals($bannerFile['expected'], $response->bannerFile);
