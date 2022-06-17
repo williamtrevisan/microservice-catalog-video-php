@@ -2,7 +2,7 @@
 
 namespace Core\UseCase\Video;
 
-use Core\Domain\Builder\Video\VideoBuilder;
+use Core\Domain\Builder\Video\CreateVideoBuilder;
 use Core\Domain\Enum\MediaStatus;
 use Core\Domain\Event\VideoCreatedEvent;
 use Core\Domain\Exception\NotFoundException;
@@ -15,7 +15,7 @@ use Core\UseCase\Interface\{EventDispatcherInterface, FileStorageInterface, Tran
 
 abstract class BaseVideoUseCase
 {
-    protected readonly VideoBuilder $videoBuilder;
+    protected readonly CreateVideoBuilder $videoBuilder;
 
     public function __construct(
         protected readonly CastMemberRepositoryInterface $castMemberRepository,
@@ -26,7 +26,7 @@ abstract class BaseVideoUseCase
         protected readonly FileStorageInterface $fileStorage,
         protected readonly EventDispatcherInterface $eventDispatcher,
     ) {
-        $this->videoBuilder = new VideoBuilder;
+        $this->videoBuilder = new CreateVideoBuilder;
     }
 
     /**

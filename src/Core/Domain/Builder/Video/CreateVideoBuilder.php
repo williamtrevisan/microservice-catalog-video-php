@@ -6,7 +6,7 @@ use Core\Domain\Entity\{BaseEntity, Video as VideoEntity};
 use Core\Domain\ValueObject\{Image, Media};
 use Core\Domain\Enum\{MediaStatus, Rating};
 
-class VideoBuilder implements VideoBuilderInterface
+class CreateVideoBuilder implements VideoBuilderInterface
 {
     private ?BaseEntity $videoEntity;
 
@@ -26,6 +26,13 @@ class VideoBuilder implements VideoBuilderInterface
             rating: Rating::from($input->rating),
         );
 
+        $this->addAggregatesEntitiesId($input);
+
+        return $this;
+    }
+
+    protected function addAggregatesEntitiesId(object $input)
+    {
         foreach ($input->castMembersId as $castMemberId) {
             $this->videoEntity->addCastMember($castMemberId);
         }
@@ -37,8 +44,6 @@ class VideoBuilder implements VideoBuilderInterface
         foreach ($input->genresId as $genreId) {
             $this->videoEntity->addGenre($genreId);
         }
-
-        return $this;
     }
 
     public function getEntity(): BaseEntity
