@@ -43,14 +43,14 @@ abstract class BaseVideoUseCase
         $this->validateEntitiesId(
             listEntitiesId: $input->categoriesId,
             repository: $this->categoryRepository,
-            singularEntityName: 'category',
-            pluralEntityName: 'categories'
+            singularEntityName: 'Category',
+            pluralEntityName: 'Categories'
         );
 
         $this->validateEntitiesId(
             listEntitiesId: $input->genresId,
             repository: $this->genreRepository,
-            singularEntityName: 'genre'
+            singularEntityName: 'Genre'
         );
     }
 
@@ -63,6 +63,8 @@ abstract class BaseVideoUseCase
         string $singularEntityName,
         string $pluralEntityName = ''
     ): void {
+        if (! $listEntitiesId) return;
+
         $entitiesId = $repository->getIdsByListId($listEntitiesId);
         $pluralEntityName = $pluralEntityName ?: $singularEntityName . 's';
 
