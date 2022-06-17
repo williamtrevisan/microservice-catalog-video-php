@@ -15,7 +15,7 @@ class VideoBuilder implements VideoBuilderInterface
         $this->videoEntity = null;
     }
 
-    public function createEntity(object $input): void
+    public function createEntity(object $input): self
     {
         $this->videoEntity = new VideoEntity(
             title: $input->title,
@@ -37,6 +37,8 @@ class VideoBuilder implements VideoBuilderInterface
         foreach ($input->genresId as $genreId) {
             $this->videoEntity->addGenre($genreId);
         }
+
+        return $this;
     }
 
     public function getEntity(): BaseEntity
@@ -44,36 +46,46 @@ class VideoBuilder implements VideoBuilderInterface
         return $this->videoEntity;
     }
 
-    public function addThumbFile(string $filePath): void
+    public function addThumbFile(string $filePath): self
     {
         $this->videoEntity->changeThumbFile(thumbFile: new Image(filePath: $filePath));
+
+        return $this;
     }
 
-    public function addThumbHalfFile(string $filePath): void
+    public function addThumbHalfFile(string $filePath): self
     {
         $thumbHalfFile = new Image(filePath: $filePath);
 
         $this->videoEntity->changeThumbHalfFile(thumbHalfFile: $thumbHalfFile);
+
+        return $this;
     }
 
-    public function addBannerFile(string $filePath): void
+    public function addBannerFile(string $filePath): self
     {
         $bannerFile = new Image(filePath: $filePath);
 
         $this->videoEntity->changeBannerFile(bannerFile: $bannerFile);
+
+        return $this;
     }
 
-    public function addTrailerFile(string $filePath): void
+    public function addTrailerFile(string $filePath): self
     {
         $trailerFile = new Media(filePath: $filePath, status: MediaStatus::Complete);
 
         $this->videoEntity->changeTrailerFile(trailerFile: $trailerFile);
+
+        return $this;
     }
 
-    public function addVideoFile(string $filePath, MediaStatus $status): void
+    public function addVideoFile(string $filePath, MediaStatus $status): self
     {
         $videoFile = new Media(filePath: $filePath, status: $status);
 
         $this->videoEntity->changeVideoFile(videoFile: $videoFile);
+
+        return $this;
     }
 }
