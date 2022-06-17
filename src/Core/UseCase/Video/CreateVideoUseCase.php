@@ -10,6 +10,7 @@ use Core\Domain\Exception\NotFoundException;
 use Core\Domain\Repository\CastMemberRepositoryInterface;
 use Core\Domain\Repository\CategoryRepositoryInterface;
 use Core\Domain\Repository\GenreRepositoryInterface;
+use Core\Domain\Repository\RepositoryInterface;
 use Core\Domain\Repository\VideoRepositoryInterface;
 use Core\Domain\ValueObject\Image;
 use Core\Domain\ValueObject\Media;
@@ -60,6 +61,8 @@ class CreateVideoUseCase
 
     private function createVideoEntity(CreateVideoInputDTO $input): void
     {
+        $this->validateAllEntitiesId($input);
+
         $this->videoEntity = new VideoEntity(
             title: $input->title,
             description: $input->description,
@@ -69,77 +72,61 @@ class CreateVideoUseCase
             rating: Rating::from($input->rating),
         );
 
-        $this->validateCastMembersId($input->castMembersId);
         foreach ($input->castMembersId as $castMemberId) {
             $this->videoEntity->addCastMember($castMemberId);
         }
 
-        $this->validateCategoriesId($input->categoriesId);
         foreach ($input->categoriesId as $categoryId) {
             $this->videoEntity->addCategory($categoryId);
         }
 
-        $this->validateGenresId($input->genresId);
         foreach ($input->genresId as $genreId) {
             $this->videoEntity->addGenre($genreId);
         }
     }
 
-    private function validate(array $id = []): void
+    /**
+     * @throws NotFoundException
+     */
+    private function validateAllEntitiesId(object $input): void
     {
+        $this->validateEntitiesId(
+            listEntitiesId: $input->castMembersId,
+            repository: $this->castMemberRepository,
+            singularEntityName: 'Cast member'
+        );
 
+        $this->validateEntitiesId(
+            listEntitiesId: $input->categoriesId,
+            repository: $this->categoryRepository,
+            singularEntityName: 'category',
+            pluralEntityName: 'categories'
+        );
+
+        $this->validateEntitiesId(
+            listEntitiesId: $input->genresId,
+            repository: $this->genreRepository,
+            singularEntityName: 'genre'
+        );
     }
 
     /**
      * @throws NotFoundException
      */
-    private function validateCastMembersId(array $castMembersId = [])
-    {
-        $castMembers = $this->castMemberRepository->getIdsByListId($castMembersId);
+    private function validateEntitiesId(
+        array $listEntitiesId,
+        RepositoryInterface $repository,
+        string $singularEntityName,
+        string $pluralEntityName = ''
+    ): void {
+        $entitiesId = $repository->getIdsByListId($listEntitiesId);
+        $pluralEntityName = $pluralEntityName ?: $singularEntityName . 's';
 
-        $arrayDifference = array_diff($castMembersId, $castMembers);
+        $arrayDifference = array_diff($listEntitiesId, $entitiesId);
         if ($arrayDifference) {
             $message = sprintf(
                 '%s with id: %s, not found in database',
-                count($arrayDifference) > 1 ? 'Cast members' : 'Cast member',
-                implode(', ', $arrayDifference)
-            );
-
-            throw new NotFoundException($message);
-        }
-    }
-
-    /**
-     * @throws NotFoundException
-     */
-    private function validateCategoriesId(array $categoriesId = [])
-    {
-        $categories = $this->categoryRepository->getIdsByListId($categoriesId);
-
-        $arrayDifference = array_diff($categoriesId, $categories);
-        if ($arrayDifference) {
-            $message = sprintf(
-                '%s with id: %s, not found in database',
-                count($arrayDifference) > 1 ? 'Categories' : 'Category',
-                implode(', ', $arrayDifference)
-            );
-
-            throw new NotFoundException($message);
-        }
-    }
-
-    /**
-     * @throws NotFoundException
-     */
-    private function validateGenresId(array $genresId = [])
-    {
-        $genres = $this->genreRepository->getIdsByListId($genresId);
-
-        $arrayDifference = array_diff($genresId, $genres);
-        if ($arrayDifference) {
-            $message = sprintf(
-                '%s with id: %s, not found in database',
-                count($arrayDifference) > 1 ? 'Genres' : 'Genre',
+                count($arrayDifference) > 1 ? $pluralEntityName : $singularEntityName,
                 implode(', ', $arrayDifference)
             );
 
