@@ -8,7 +8,7 @@ use Core\Domain\Enum\{MediaStatus, Rating};
 
 class CreateVideoBuilder implements VideoBuilderInterface
 {
-    private ?BaseEntity $videoEntity;
+    protected ?BaseEntity $videoEntity;
 
     public function __construct()
     {
@@ -53,6 +53,8 @@ class CreateVideoBuilder implements VideoBuilderInterface
 
     public function addThumbFile(string $filePath): self
     {
+        if (! $filePath) return $this;
+
         $this->videoEntity->changeThumbFile(thumbFile: new Image(filePath: $filePath));
 
         return $this;
@@ -60,8 +62,9 @@ class CreateVideoBuilder implements VideoBuilderInterface
 
     public function addThumbHalfFile(string $filePath): self
     {
-        $thumbHalfFile = new Image(filePath: $filePath);
+        if (! $filePath) return $this;
 
+        $thumbHalfFile = new Image(filePath: $filePath);
         $this->videoEntity->changeThumbHalfFile(thumbHalfFile: $thumbHalfFile);
 
         return $this;
@@ -69,8 +72,9 @@ class CreateVideoBuilder implements VideoBuilderInterface
 
     public function addBannerFile(string $filePath): self
     {
-        $bannerFile = new Image(filePath: $filePath);
+        if (! $filePath) return $this;
 
+        $bannerFile = new Image(filePath: $filePath);
         $this->videoEntity->changeBannerFile(bannerFile: $bannerFile);
 
         return $this;
@@ -78,8 +82,9 @@ class CreateVideoBuilder implements VideoBuilderInterface
 
     public function addTrailerFile(string $filePath): self
     {
-        $trailerFile = new Media(filePath: $filePath, status: MediaStatus::Complete);
+        if (! $filePath) return $this;
 
+        $trailerFile = new Media(filePath: $filePath, status: MediaStatus::Complete);
         $this->videoEntity->changeTrailerFile(trailerFile: $trailerFile);
 
         return $this;
@@ -87,8 +92,9 @@ class CreateVideoBuilder implements VideoBuilderInterface
 
     public function addVideoFile(string $filePath, MediaStatus $status): self
     {
-        $videoFile = new Media(filePath: $filePath, status: $status);
+        if (! $filePath) return $this;
 
+        $videoFile = new Media(filePath: $filePath, status: $status);
         $this->videoEntity->changeVideoFile(videoFile: $videoFile);
 
         return $this;

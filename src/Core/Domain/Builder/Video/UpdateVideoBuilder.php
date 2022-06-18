@@ -2,6 +2,7 @@
 
 namespace Core\Domain\Builder\Video;
 
+use Core\Domain\Entity\BaseEntity;
 use Core\Domain\Entity\Video as VideoEntity;
 use Core\Domain\Enum\Rating;
 use Core\Domain\ValueObject\Uuid;
@@ -23,6 +24,13 @@ class UpdateVideoBuilder extends CreateVideoBuilder
         );
 
         $this->addAggregatesEntitiesId($input);
+
+        return $this;
+    }
+
+    public function setEntity(BaseEntity $videoEntity): self
+    {
+        $this->videoEntity = $videoEntity;
 
         return $this;
     }

@@ -9,14 +9,15 @@ use Core\Domain\Repository\CastMemberRepositoryInterface;
 use Core\Domain\Repository\CategoryRepositoryInterface;
 use Core\Domain\Repository\GenreRepositoryInterface;
 use Core\Domain\Repository\VideoRepositoryInterface;
-use Core\UseCase\DTO\Video\Create\{CreateVideoInputDTO, CreateVideoOutputDTO};
+use Core\Domain\ValueObject\Uuid;
+use Core\UseCase\DTO\Video\Update\{UpdateVideoInputDTO, UpdateVideoOutputDTO};
 use Core\UseCase\Interface\{EventDispatcherInterface, FileStorageInterface, TransactionInterface};
-use Core\UseCase\Video\CreateVideoUseCase;
+use Core\UseCase\Video\UpdateVideoUseCase;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-class CreateVideoUseCaseUnitTest extends TestCase
+class UpdateVideoUseCaseUnitTest extends TestCase
 {
     private VideoEntity $videoEntity;
     private CastMemberRepositoryInterface $castMemberRepository;
@@ -26,7 +27,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
     private TransactionInterface $transaction;
     private FileStorageInterface $fileStorage;
     private EventDispatcherInterface $eventDispatcher;
-    private CreateVideoUseCase $createVideoUseCase;
+    private UpdateVideoUseCase $updateVideoUseCase;
 
     protected function setUp(): void
     {
@@ -40,7 +41,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
         $this->transaction = $this->createTransactionMock();
         $this->fileStorage = $this->createFileStorageMock();
         $this->eventDispatcher = $this->createEventDispatcherMock();
-        $this->createVideoUseCase = new CreateVideoUseCase(
+        $this->updateVideoUseCase = new UpdateVideoUseCase(
             castMemberRepository: $this->castMemberRepository,
             categoryRepository: $this->categoryRepository,
             genreRepository: $this->genreRepository,
@@ -53,17 +54,14 @@ class CreateVideoUseCaseUnitTest extends TestCase
 
     private function createVideoEntityMock()
     {
-        $videoEntity = Mockery::mock(VideoEntity::class, [
-            'Video title',
-            'Video description',
-            2001,
-            190,
-            true,
-            Rating::L,
-        ]);
-        $videoEntity->shouldReceive('id');
-        $videoEntity->shouldReceive('createdAt');
-        $videoEntity->shouldReceive('addCastMember', 'addCategory', 'addGenre');
+        $videoEntity = new VideoEntity(
+            title: 'Video title',
+            description: 'Video description',
+            yearLaunched: 2001,
+            duration: 190,
+            opened: true,
+            rating: Rating::L,
+        );
 
         return $videoEntity;
     }
@@ -89,7 +87,8 @@ class CreateVideoUseCaseUnitTest extends TestCase
             stdClass::class,
             VideoRepositoryInterface::class
         );
-        $videoRepository->shouldReceive('insert')->andReturn($this->videoEntity);
+        $videoRepository->shouldReceive('findById')->andReturn($this->videoEntity);
+        $videoRepository->shouldReceive('update')->andReturn($this->videoEntity);
         $videoRepository->shouldReceive('updateMedia');
 
         return $videoRepository;
@@ -300,13 +299,10 @@ class CreateVideoUseCaseUnitTest extends TestCase
         $this->castMemberRepository->shouldReceive('getIdsByListId')->andReturn([]);
         $this->categoryRepository->shouldReceive('getIdsByListId')->andReturn([]);
         $this->genreRepository->shouldReceive('getIdsByListId')->andReturn([]);
-        $createVideoInputDTO = new CreateVideoInputDTO(
+        $updateVideoInputDTO = new UpdateVideoInputDTO(
+            id: Uuid::random(),
             title: 'Video title',
             description: 'Video description',
-            yearLaunched: 2001,
-            duration: 190,
-            opened: true,
-            rating: 'L',
             castMembersId: $isCastMember ? $listId : [],
             categoriesId: $isCategory ? $listId : [],
             genresId: $isGenre ? $listId : [],
@@ -317,7 +313,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
             sprintf('%s with id: %s, not found in database', $label, implode(', ', $listId))
         );
 
-        $this->createVideoUseCase->execute($createVideoInputDTO);
+        $this->updateVideoUseCase->execute($updateVideoInputDTO);
 
         $this->transaction->shouldHaveReceived('rollback');
         if ($isCastMember) {
@@ -343,28 +339,23 @@ class CreateVideoUseCaseUnitTest extends TestCase
     /** @test */
     public function should_be_able_to_create_a_new_video()
     {
-        $createVideoInputDTO = new CreateVideoInputDTO(
+        $updateVideoInputDTO = new UpdateVideoInputDTO(
+            id: Uuid::random(),
             title: 'Video title',
             description: 'Video description',
-            yearLaunched: 2001,
-            duration: 190,
-            opened: true,
-            rating: 'L',
             castMembersId: [],
             categoriesId: [],
             genresId: [],
         );
 
-        $response = $this->createVideoUseCase->execute(input: $createVideoInputDTO);
+        $response = $this->updateVideoUseCase->execute(input: $updateVideoInputDTO);
 
-        $this->assertInstanceOf(CreateVideoOutputDTO::class, $response);
+        $this->assertInstanceOf(UpdateVideoOutputDTO::class, $response);
         $this->castMemberRepository->shouldNotHaveReceived('getIdsByListId');
         $this->categoryRepository->shouldNotHaveReceived('getIdsByListId');
         $this->genreRepository->shouldNotHaveReceived('getIdsByListId');
-        $this->videoEntity->shouldNotHaveReceived('addCastMember');
-        $this->videoEntity->shouldNotHaveReceived('addCategory');
-        $this->videoEntity->shouldNotHaveReceived('addGenre');
-        $this->videoRepository->shouldHaveReceived('insert');
+        $this->videoRepository->shouldHaveReceived('findById');
+        $this->videoRepository->shouldHaveReceived('update');
         $this->fileStorage->shouldNotHaveReceived('store');
         $this->eventDispatcher->shouldNotHaveReceived('dispatch');
         $this->videoRepository->shouldHaveReceived('updateMedia');
@@ -383,13 +374,10 @@ class CreateVideoUseCaseUnitTest extends TestCase
         array $videoFile,
         bool $isAllFilesEmpty
     ) {
-        $createVideoInputDTO = new CreateVideoInputDTO(
+        $updateVideoInputDTO = new UpdateVideoInputDTO(
+            id: Uuid::random(),
             title: 'Video title',
             description: 'Video description',
-            yearLaunched: 2001,
-            duration: 190,
-            opened: true,
-            rating: 'L',
             castMembersId: [],
             categoriesId: [],
             genresId: [],
@@ -400,7 +388,7 @@ class CreateVideoUseCaseUnitTest extends TestCase
             videoFile: $videoFile['file'],
         );
 
-        $response = $this->createVideoUseCase->execute(input: $createVideoInputDTO);
+        $response = $this->updateVideoUseCase->execute(input: $updateVideoInputDTO);
 
         if (! $isAllFilesEmpty) $this->fileStorage->shouldHaveReceived('store');
         if ($videoFile['file']) $this->eventDispatcher->shouldHaveReceived('dispatch');

@@ -38,6 +38,14 @@ class Video extends BaseEntity
         $this->validate();
     }
 
+    public function update(string $title, string $description): void
+    {
+        $this->title = $title;
+        $this->description = $description;
+
+        $this->validate();
+    }
+
     public function addCastMember(string $castMemberId): void
     {
         $this->castMembersId[] = $castMemberId;

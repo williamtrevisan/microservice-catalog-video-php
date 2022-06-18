@@ -2,28 +2,32 @@
 
 namespace Core\UseCase\Video;
 
-use Core\Domain\Builder\Video\CreateVideoBuilder;
+use Core\Domain\Builder\Video\UpdateVideoBuilder;
 use Core\Domain\Builder\Video\VideoBuilderInterface;
-use Core\UseCase\DTO\Video\Create\{CreateVideoInputDTO, CreateVideoOutputDTO};
+use Core\UseCase\DTO\Video\Update\UpdateVideoInputDTO;
+use Core\UseCase\DTO\Video\Update\UpdateVideoOutputDTO;
 use Exception;
 
-class CreateVideoUseCase extends BaseVideoUseCase
+class UpdateVideoUseCase extends BaseVideoUseCase
 {
     protected function getBuilder(): VideoBuilderInterface
     {
-        return new CreateVideoBuilder;
+        return new UpdateVideoBuilder;
     }
 
     /**
      * @throws Exception
      */
-    public function execute(CreateVideoInputDTO $input): CreateVideoOutputDTO
+    public function execute(UpdateVideoInputDTO $input): UpdateVideoOutputDTO
     {
+        $video = $this->videoRepository->findById($input->id);
+        $video->update(title: $input->title, description: $input->title);
+        $this->videoBuilder->setEntity($video);
+
         $this->validateAllEntitiesId($input);
-        $this->videoBuilder->createEntity($input);
 
         try {
-            $this->videoRepository->insert($this->videoBuilder->getEntity());
+            $this->videoRepository->update($this->videoBuilder->getEntity());
             $this->storageFiles($input);
             $this->videoRepository->updateMedia($this->videoBuilder->getEntity());
 
@@ -37,11 +41,11 @@ class CreateVideoUseCase extends BaseVideoUseCase
         }
     }
 
-    private function output(): CreateVideoOutputDTO
+    private function output(): UpdateVideoOutputDTO
     {
         $videoEntity = $this->videoBuilder->getEntity();
 
-        return new CreateVideoOutputDTO(
+        return new UpdateVideoOutputDTO(
             id: $videoEntity->id(),
             title: $videoEntity->title,
             description: $videoEntity->description,
@@ -62,4 +66,3 @@ class CreateVideoUseCase extends BaseVideoUseCase
         );
     }
 }
-
