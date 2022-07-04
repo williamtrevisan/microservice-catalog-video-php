@@ -29,6 +29,7 @@ class VideoUnitTest extends ModelTestCase
             'opened',
             'rating',
             'duration',
+            'created_at',
         ];
     }
 
