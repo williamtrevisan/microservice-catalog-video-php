@@ -45,7 +45,13 @@ class VideoEloquentRepository implements VideoRepositoryInterface
 
     public function findAll(string $filter = '', string $order = 'DESC'): array
     {
-        // TODO: Implement findAll() method.
+        return $this->videoModel
+            ->where(function($query) use ($filter) {
+                if ($filter) $query->where('title', 'LIKE', "%$filter%");
+            })
+            ->orderBy('title', $order)
+            ->get()
+            ->toArray();
     }
 
     public function paginate(string $filter = '', string $order = 'DESC', int $page = 1, int $totalPage = 15): PaginationInterface
