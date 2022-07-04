@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MediaVideo extends Model
 {
     use HasFactory;
 
     protected $table = 'medias_video';
+
+    public function video(): BelongsTo
+    {
+        return $this->belongsTo(Video::class);
+    }
 }
