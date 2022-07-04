@@ -82,6 +82,13 @@ class VideoEloquentRepository implements VideoRepositoryInterface
             id: new Uuid($videoModel->id),
         );
 
+        $videoModel->castMembers
+            ->map(fn($castMember) => $videoEntity->addCastMember($castMember->id));
+        $videoModel->categories
+            ->map(fn($category) => $videoEntity->addCategory($category->id));
+        $videoModel->genres
+            ->map(fn($genre) => $videoEntity->addGenre($genre->id));
+
         return $videoEntity;
     }
 }

@@ -56,7 +56,7 @@ class VideoEloquentRepositoryTest extends TestCase
         $categories = CategoryModel::factory(4)->create();
         $genres = GenreModel::factory(4)->create();
 
-        $videoEntity = new VideoEntity(
+        $expectedVideo = new VideoEntity(
             title: 'Video title',
             description: 'Video description',
             yearLaunched: 2025,
@@ -65,20 +65,23 @@ class VideoEloquentRepositoryTest extends TestCase
             rating: Rating::Rate10,
         );
         foreach ($castMembers as $castMember) {
-            $videoEntity->addCastMember($castMember->id);
+            $expectedVideo->addCastMember($castMember->id);
         }
         foreach ($categories as $category) {
-            $videoEntity->addCategory($category->id);
+            $expectedVideo->addCategory($category->id);
         }
         foreach ($genres as $genre) {
-            $videoEntity->addGenre($genre->id);
+            $expectedVideo->addGenre($genre->id);
         }
 
-        $this->videoRepository->insert($videoEntity);
+        $actualVideo = $this->videoRepository->insert($expectedVideo);
 
-        $this->assertDatabaseHas('videos', ['id' => $videoEntity->id()]);
+        $this->assertDatabaseHas('videos', ['id' => $expectedVideo->id()]);
         $this->assertDatabaseCount('cast_member_video', 4);
         $this->assertDatabaseCount('category_video', 4);
         $this->assertDatabaseCount('genre_video', 4);
+        $this->assertCount(4, $actualVideo->castMembersId);
+        $this->assertCount(4, $actualVideo->categoriesId);
+        $this->assertCount(4, $actualVideo->genresId);
     }
 }
