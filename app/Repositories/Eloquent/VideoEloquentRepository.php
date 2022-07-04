@@ -9,6 +9,7 @@ use Core\Domain\Enum\Rating;
 use Core\Domain\Repository\PaginationInterface;
 use Core\Domain\Repository\VideoRepositoryInterface;
 use Core\Domain\ValueObject\Uuid;
+use Illuminate\Database\Eloquent\Model;
 
 class VideoEloquentRepository implements VideoRepositoryInterface
 {
@@ -27,6 +28,8 @@ class VideoEloquentRepository implements VideoRepositoryInterface
             'opened' => $baseEntity->opened,
             'rating' => $baseEntity->rating->value,
         ]);
+
+        $this->syncRelationships($video, $baseEntity);
 
         return $this->toVideo($video);
     }
@@ -59,6 +62,12 @@ class VideoEloquentRepository implements VideoRepositoryInterface
     public function updateMedia(BaseEntity $baseEntity): BaseEntity
     {
         // TODO: Implement updateMedia() method.
+    }
+
+    protected function syncRelationships(Model $videoModel, BaseEntity $baseEntity) {
+        $videoModel->castMembers()->sync($baseEntity->castMembersId);
+        $videoModel->categories()->sync($baseEntity->categoriesId);
+        $videoModel->genres()->sync($baseEntity->genresId);
     }
 
     private function toVideo(VideoModel $videoModel): BaseEntity
