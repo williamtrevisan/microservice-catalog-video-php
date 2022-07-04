@@ -102,4 +102,15 @@ class VideoEloquentRepositoryTest extends TestCase
 
         $this->videoRepository->findById('videoId');
     }
+
+    /** @test */
+    public function should_be_able_to_find_a_video()
+    {
+        $expectedVideo = VideoModel::factory()->create();
+
+        $actualVideo = $this->videoRepository->findById($expectedVideo->id);
+
+        $this->assertEquals($expectedVideo->id, $actualVideo->id());
+        $this->assertEquals($expectedVideo->title, $actualVideo->title);
+    }
 }
