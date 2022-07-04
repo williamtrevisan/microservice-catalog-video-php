@@ -11,6 +11,8 @@ use Core\Domain\Entity\Video as VideoEntity;
 use Core\Domain\Enum\Rating;
 use Core\Domain\Exception\NotFoundException;
 use Core\Domain\Repository\VideoRepositoryInterface;
+use Core\Domain\ValueObject\Uuid;
+use DateTime;
 use Tests\TestCase;
 
 class VideoEloquentRepositoryTest extends TestCase
@@ -164,5 +166,49 @@ class VideoEloquentRepositoryTest extends TestCase
             ['page' => 2, 'totalPage' => 15],
             ['page' => 3, 'totalPage' => 15],
         ];
+    }
+
+    /** @test */
+    public function should_be_able_to_update_a_video()
+    {
+        $castMembers = CastMemberModel::factory(10)->create();
+        $categories = CategoryModel::factory(10)->create();
+        $genres = GenreModel::factory(10)->create();
+        $expectedVideo = VideoModel::factory()->create();
+
+        $expectedVideo = new VideoEntity(
+            title: 'Video title updated',
+            description: 'Video description',
+            yearLaunched: 2025,
+            duration: 190,
+            opened: true,
+            rating: Rating::Rate10,
+            id: new Uuid($expectedVideo->id),
+            createdAt: new DateTime($expectedVideo->created_at),
+        );
+        $castMembers->map(
+            fn($castMember) => $expectedVideo->addCastMember($castMember->id)
+        );
+        $categories->map(fn($category) => $expectedVideo->addCategory($category->id));
+        $genres->map(fn($genre) => $expectedVideo->addGenre($genre->id));
+
+        $actualVideo = $this->videoRepository->update($expectedVideo);
+
+        $this->assertDatabaseHas('videos', ['title' => 'Video title updated']);
+        $this->assertDatabaseCount('cast_member_video', 10);
+        $this->assertDatabaseCount('category_video', 10);
+        $this->assertDatabaseCount('genre_video', 10);
+        $this->assertEquals(
+            $castMembers->pluck('id')->toArray(),
+            $actualVideo->castMembersId
+        );
+        $this->assertEquals(
+            $categories->pluck('id')->toArray(),
+            $actualVideo->categoriesId
+        );
+        $this->assertEquals(
+            $genres->pluck('id')->toArray(),
+            $actualVideo->genresId
+        );
     }
 }

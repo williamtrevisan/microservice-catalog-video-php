@@ -73,7 +73,20 @@ class VideoEloquentRepository implements VideoRepositoryInterface
 
     public function update(BaseEntity $baseEntity): BaseEntity
     {
-        // TODO: Implement update() method.
+        $video = $this->videoModel->find($baseEntity->id());
+
+        $video->update([
+            'title' => $baseEntity->title,
+            'description' => $baseEntity->description,
+            'year_launched' => $baseEntity->yearLaunched,
+            'rating' => $baseEntity->rating->value,
+            'duration' => $baseEntity->duration,
+            'opened' => $baseEntity->opened,
+        ]);
+        $video->refresh();
+        $this->syncRelationships($video, $baseEntity);
+
+        return $this->toVideo($video);
     }
 
     public function delete(string $id): bool
