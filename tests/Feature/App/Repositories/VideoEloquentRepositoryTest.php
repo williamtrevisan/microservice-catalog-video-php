@@ -211,4 +211,23 @@ class VideoEloquentRepositoryTest extends TestCase
             $actualVideo->genresId
         );
     }
+
+    /** @test */
+    public function should_be_throw_an_exception_if_cannot_find_video_for_delete()
+    {
+        $this->expectException(NotFoundException::class);
+
+        $this->videoRepository->delete('videoId');
+    }
+
+    /** @test */
+    public function should_be_able_to_delete_a_video()
+    {
+        $expectedVideo = VideoModel::factory()->create();
+
+        $hasDeleted = $this->videoRepository->delete($expectedVideo->id);
+
+        $this->assertSoftDeleted('videos', ['id' => $expectedVideo->id]);
+        $this->assertTrue($hasDeleted);
+    }
 }
