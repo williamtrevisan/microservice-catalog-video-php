@@ -9,6 +9,7 @@ use App\Models\Video as VideoModel;
 use App\Repositories\Eloquent\VideoEloquentRepository;
 use Core\Domain\Entity\Video as VideoEntity;
 use Core\Domain\Enum\Rating;
+use Core\Domain\Exception\NotFoundException;
 use Core\Domain\Repository\VideoRepositoryInterface;
 use Tests\TestCase;
 
@@ -92,5 +93,13 @@ class VideoEloquentRepositoryTest extends TestCase
         $this->assertEquals(
             $genres->pluck('id')->toArray(), $actualVideo->genresId
         );
+    }
+
+    /** @test */
+    public function should_be_throw_an_expection_if_cannot_find_video()
+    {
+        $this->expectException(NotFoundException::class);
+
+        $this->videoRepository->findById('videoId');
     }
 }
