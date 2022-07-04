@@ -135,4 +135,17 @@ class VideoEloquentRepositoryTest extends TestCase
         $this->assertCount(1, $actualVideos);
         $this->assertDatabaseCount('videos', 11);
     }
+
+    /** @test */
+    public function should_be_able_to_get_paginate_videos()
+    {
+        VideoModel::factory(50)->create();
+
+        $actualVideos = $this->videoRepository->paginate();
+
+        $this->assertCount(15, $actualVideos->items());
+        $this->assertEquals(50, $actualVideos->total());
+        $this->assertEquals(1, $actualVideos->currentPage());
+        $this->assertEquals(15, $actualVideos->perPage());
+    }
 }
