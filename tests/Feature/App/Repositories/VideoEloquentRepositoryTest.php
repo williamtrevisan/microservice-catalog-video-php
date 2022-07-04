@@ -81,7 +81,16 @@ class VideoEloquentRepositoryTest extends TestCase
         $this->assertDatabaseCount('category_video', 4);
         $this->assertDatabaseCount('genre_video', 4);
         $this->assertCount(4, $actualVideo->castMembersId);
+        $this->assertEquals(
+            $castMembers->pluck('id')->toArray(), $actualVideo->castMembersId
+        );
         $this->assertCount(4, $actualVideo->categoriesId);
+        $this->assertEquals(
+            $categories->pluck('id')->toArray(), $actualVideo->categoriesId
+        );
         $this->assertCount(4, $actualVideo->genresId);
+        $this->assertEquals(
+            $genres->pluck('id')->toArray(), $actualVideo->genresId
+        );
     }
 }
